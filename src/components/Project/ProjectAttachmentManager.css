@@ -1,0 +1,154 @@
+/**
+ * Project Attachment Manager - Serene Minimalism Design
+ */
+
+.attachment-manager {
+  width: 100%;
+}
+
+/* 附件列表 */
+.attachment-list {
+  margin-top: 16px;
+}
+
+.attachment-list .ant-list-item {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #f0f0f0);
+  background: var(--color-surface, #ffffff);
+  margin-bottom: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.attachment-list .ant-list-item:hover {
+  border-color: var(--color-accent-light, rgba(100, 116, 139, 0.2));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+[data-theme='dark'] .attachment-list .ant-list-item {
+  background: #141414;
+  border-color: #303030;
+}
+
+[data-theme='dark'] .attachment-list .ant-list-item:hover {
+  border-color: var(--color-accent-light, rgba(148, 163, 184, 0.2));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 文件图标 */
+.attachment-icon {
+  font-size: 32px;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: var(--color-bg, #fafafa);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] .attachment-icon {
+  background: #1f1f1f;
+}
+
+.attachment-list .ant-list-item:hover .attachment-icon {
+  transform: scale(1.1);
+}
+
+/* 文件名链接 */
+.attachment-filename {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-primary, rgba(0, 0, 0, 0.88));
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.attachment-filename:hover {
+  color: var(--color-accent, #64748b);
+}
+
+[data-theme='dark'] .attachment-filename {
+  color: var(--color-text-primary, rgba(255, 255, 255, 0.85));
+}
+
+[data-theme='dark'] .attachment-filename:hover {
+  color: var(--color-accent, #94a3b8);
+}
+
+/* 文件信息 */
+.attachment-meta {
+  font-size: 13px;
+  color: var(--color-text-secondary, rgba(0, 0, 0, 0.65));
+  margin-top: 4px;
+}
+
+[data-theme='dark'] .attachment-meta {
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.65));
+}
+
+.attachment-meta .ant-space-item {
+  color: var(--color-text-tertiary, rgba(0, 0, 0, 0.45));
+}
+
+[data-theme='dark'] .attachment-meta .ant-space-item {
+  color: var(--color-text-tertiary, rgba(255, 255, 255, 0.45));
+}
+
+/* 操作按钮 */
+.attachment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.attachment-actions .ant-btn-link {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.attachment-actions .ant-btn-link:hover {
+  background: var(--color-bg, #fafafa);
+}
+
+[data-theme='dark'] .attachment-actions .ant-btn-link:hover {
+  background: #1f1f1f;
+}
+
+/* 空状态 */
+.no-attachments {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--color-text-tertiary, rgba(0, 0, 0, 0.45));
+  font-size: 14px;
+}
+
+[data-theme='dark'] .no-attachments {
+  color: var(--color-text-tertiary, rgba(255, 255, 255, 0.45));
+}
+
+/* 上传按钮 */
+.upload-button {
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upload-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 文件类型图标颜色 */
+.file-icon-image { filter: hue-rotate(200deg); }
+.file-icon-pdf { filter: hue-rotate(0deg); }
+.file-icon-doc { filter: hue-rotate(220deg); }
+.file-icon-excel { filter: hue-rotate(120deg); }
+.file-icon-archive { filter: hue-rotate(30deg); }

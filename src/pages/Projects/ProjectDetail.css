@@ -1,0 +1,18 @@
+.project-detail {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.attachment-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.attachment-item:last-child {
+  border-bottom: none;
+}
+
+.file-size {
+  margin-left: 8px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>测试筛选功能</title>
+</head>
+<body>
+    <h1>项目筛选功能测试</h1>
+    <p>打开浏览器控制台查看日志</p>
+    <button onclick="testFilter()">测试筛选</button>
+
+    <script>
+        function testFilter() {
+            console.log('=== 开始测试筛选功能 ===');
+
+            // 检查关键函数是否存在
+            console.log('1. 检查 zustand store');
+            console.log('2. 检查 API 调用');
+            console.log('3. 检查参数传递');
+
+            console.log('=== 请在项目页面点击筛选按钮，并查看控制台日志 ===');
+            console.log('应该看到以下日志：');
+            console.log('  🔍 [ProjectList] 执行筛选，参数: {...}');
+            console.log('  🔧 Store setFilters 被调用，filters: {...}');
+            console.log('  📞 Store 调用 fetchProjects');
+            console.log('  📡 fetchProjects 被调用，当前 filters: {...}');
+            console.log('  📊 获取项目列表 - 参数: {...}');
+        }
+    </script>
+</body>
+</html>

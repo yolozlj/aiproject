@@ -1,0 +1,51 @@
+/* 暗黑主题 */
+[data-theme='dark'] {
+  /* 主色 */
+  --color-primary: #177ddc;
+
+  /* 背景颜色 */
+  --color-bg-base: #141414;
+  --color-bg-container: #1f1f1f;
+  --color-bg-elevated: #262626;
+  --color-bg-layout: #000000;
+
+  /* 文字颜色 */
+  --color-text-primary: rgba(255, 255, 255, 0.85);
+  --color-text-secondary: rgba(255, 255, 255, 0.65);
+  --color-text-disabled: rgba(255, 255, 255, 0.25);
+
+  /* 边框 */
+  --border-color: #303030;
+  --border-radius: 6px;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='dark'] body {
+  background: var(--color-bg-layout);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .ant-layout {
+  background: var(--color-bg-layout);
+}
+
+[data-theme='dark'] .ant-layout-header {
+  background: var(--color-bg-base);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .ant-layout-sider {
+  background: var(--color-bg-base);
+  border-right: 1px solid var(--border-color);
+}
+
+[data-theme='dark'] .ant-card {
+  background: var(--color-bg-container);
+  border-color: var(--border-color);
+  color: var(--color-text-primary);
+}

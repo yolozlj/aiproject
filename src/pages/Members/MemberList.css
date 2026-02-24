@@ -1,0 +1,408 @@
+/*
+  Member List - Serene Minimalism Design
+  与 Dashboard、ProjectList 保持一致的设计风格
+*/
+
+/* Import fonts (same as Dashboard) */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* CSS Variables - 继承 Dashboard 的设计系统 */
+:root {
+  /* Light theme colors */
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-accent: #64748b;
+  --color-accent-light: #94a3b8;
+
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 48px;
+  --spacing-xl: 72px;
+
+  /* Typography */
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Monaco', monospace;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* Animation */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Main Container */
+.member-list {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+
+  /* Initial state */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUp 0.6s var(--ease-smooth) forwards;
+}
+
+/* Page Header */
+.member-list .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  animation: slideDown 0.6s var(--ease-smooth) 0.1s both;
+}
+
+.member-list .page-title {
+  font-size: 48px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+}
+
+/* Filter Card */
+.member-list .filter-card {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border-light) !important;
+  border-radius: 12px !important;
+  padding: var(--spacing-md) !important;
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s var(--ease-smooth);
+  animation: slideUp 0.6s var(--ease-smooth) 0.2s both;
+}
+
+.member-list .filter-card:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.member-list .filter-card .ant-card-body {
+  padding: 0 !important;
+}
+
+/* Table Card */
+.member-list > .ant-card {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border-light) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s var(--ease-smooth);
+  animation: slideUp 0.6s var(--ease-smooth) 0.3s both;
+}
+
+.member-list > .ant-card:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.member-list > .ant-card .ant-card-body {
+  padding: 0 !important;
+}
+
+/* Table Styles */
+.member-list .ant-table {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+}
+
+.member-list .ant-table-thead > tr > th {
+  background: transparent !important;
+  border-bottom: 1px solid var(--color-border-light) !important;
+  color: var(--color-text-tertiary) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: var(--spacing-md) var(--spacing-sm) !important;
+}
+
+.member-list .ant-table-tbody > tr {
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.member-list .ant-table-tbody > tr:hover {
+  background: var(--color-bg) !important;
+}
+
+.member-list .ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--color-border-light) !important;
+  padding: var(--spacing-sm) !important;
+  color: var(--color-text-primary);
+}
+
+/* Tags - minimal design */
+.member-list .ant-tag {
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border: none;
+}
+
+/* Input Styles */
+.member-list .filter-card .ant-input,
+.member-list .filter-card .ant-select-selector {
+  border-radius: 6px !important;
+  border-color: var(--color-border) !important;
+  transition: all 0.2s var(--ease-smooth);
+  font-family: var(--font-sans);
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+}
+
+.member-list .filter-card .ant-input:hover,
+.member-list .filter-card .ant-select-selector:hover {
+  border-color: var(--color-accent-light) !important;
+}
+
+.member-list .filter-card .ant-input:focus,
+.member-list .filter-card .ant-select-focused .ant-select-selector {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 2px rgba(100, 116, 139, 0.1) !important;
+}
+
+.member-list .filter-card .ant-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* Button Styles */
+.member-list .page-header .ant-btn-primary {
+  border-radius: 6px;
+  font-weight: 500;
+  height: 36px;
+  padding: 0 20px;
+  transition: all 0.2s var(--ease-smooth);
+  border: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.member-list .page-header .ant-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.member-list .filter-card .ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.member-list .filter-card .ant-btn-primary {
+  border: none;
+  box-shadow: var(--shadow-subtle);
+}
+
+.member-list .filter-card .ant-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.member-list .filter-card .ant-btn-default {
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+}
+
+.member-list .filter-card .ant-btn-default:hover {
+  border-color: var(--color-accent-light);
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+}
+
+/* Action Buttons in Table */
+.member-list .ant-table-tbody .ant-btn-link {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 8px;
+  height: auto;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.member-list .ant-table-tbody .ant-btn-link:hover {
+  transform: translateY(-1px);
+}
+
+/* Pagination */
+.member-list .ant-pagination {
+  margin-top: var(--spacing-md);
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.member-list .ant-pagination-item {
+  border-radius: 6px;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.member-list .ant-pagination-item:hover {
+  border-color: var(--color-accent-light);
+  background: var(--color-bg);
+}
+
+.member-list .ant-pagination-item-active {
+  border-color: var(--color-border);
+  background: var(--color-bg);
+}
+
+.member-list .ant-pagination-item-active a {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.member-list .ant-pagination-item a {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .member-list {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .member-list .page-title {
+    font-size: 36px;
+  }
+
+  .member-list .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .member-list .page-header .ant-btn {
+    width: 100%;
+  }
+
+  .member-list .filter-card .ant-space {
+    width: 100%;
+  }
+
+  .member-list .filter-card .ant-space-item {
+    width: 100%;
+  }
+
+  .member-list .filter-card .ant-input,
+  .member-list .filter-card .ant-select {
+    width: 100% !important;
+  }
+}
+
+/* Dark theme support */
+[data-theme='dark'] .member-list {
+  --color-bg: #000000;
+  --color-surface: #1f1f1f;
+  --color-text-primary: rgba(255, 255, 255, 0.85);
+  --color-text-secondary: rgba(255, 255, 255, 0.65);
+  --color-text-tertiary: rgba(255, 255, 255, 0.45);
+  --color-border: #303030;
+  --color-border-light: #262626;
+  --color-accent: #94a3b8;
+  --color-accent-light: #cbd5e1;
+
+  /* Adjust shadows for dark mode */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='dark'] .member-list .filter-card .ant-input,
+[data-theme='dark'] .member-list .filter-card .ant-select-selector {
+  background: #262626 !important;
+  border-color: #303030 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+[data-theme='dark'] .member-list .ant-pagination-item {
+  background: #1f1f1f;
+  border-color: #303030;
+}
+
+[data-theme='dark'] .member-list .ant-pagination-item:hover {
+  background: #262626;
+  border-color: #404040;
+}
+
+[data-theme='dark'] .member-list .ant-pagination-item-active {
+  background: #94a3b8;
+  border-color: #94a3b8;
+}
+
+[data-theme='dark'] .member-list .ant-pagination-item a {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='dark'] .member-list .ant-pagination-item-active a {
+  color: #000000;
+}
+
+/* Minimal theme - explicit light colors */
+[data-theme='minimal'] .member-list {
+  --color-bg: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-text-primary: rgba(0, 0, 0, 0.88);
+  --color-text-secondary: rgba(0, 0, 0, 0.65);
+  --color-text-tertiary: rgba(0, 0, 0, 0.45);
+  --color-border: #f0f0f0;
+  --color-border-light: #f5f5f5;
+  --color-accent: #64748b;
+  --color-accent-light: #94a3b8;
+}
+
+/* Minimal theme - softer pagination */
+[data-theme='minimal'] .member-list .ant-pagination-item-active {
+  border-color: #e0e0e0;
+  background: #f8f8f8;
+}
+
+[data-theme='minimal'] .member-list .ant-pagination-item-active a {
+  color: rgba(0, 0, 0, 0.88);
+  font-weight: 600;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .member-list,
+  .member-list .page-header,
+  .member-list .filter-card,
+  .member-list > .ant-card {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,24 @@
+.main-layout {
+  min-height: 100vh;
+}
+
+.content-layout {
+  background: var(--color-bg-layout);
+}
+
+.main-content {
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

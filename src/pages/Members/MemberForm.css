@@ -1,0 +1,14 @@
+.member-form {
+  padding: 24px;
+}
+
+.member-form .page-header {
+  margin-bottom: 16px;
+}
+
+.member-form .page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--color-text);
+}

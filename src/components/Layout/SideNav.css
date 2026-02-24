@@ -1,0 +1,143 @@
+.side-nav {
+  position: relative;
+  min-height: calc(100vh - 64px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========== Logo ========== */
+.sider-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 16px 16px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sider-logo-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5B8DEF, #7BA4F4);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sider-logo-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: -0.3px;
+}
+
+.side-nav-collapsed .sider-logo {
+  justify-content: center;
+  padding: 20px 0 16px;
+}
+
+/* ========== 自定义菜单 ========== */
+.sider-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 12px;
+}
+
+.sider-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sider-menu-item:hover {
+  background: rgba(91, 141, 239, 0.08);
+  color: var(--color-primary);
+}
+
+.sider-menu-item-selected {
+  background: rgba(91, 141, 239, 0.12);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.sider-menu-item-selected:hover {
+  background: rgba(91, 141, 239, 0.16);
+}
+
+.sider-menu-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sider-menu-label {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* ========== 折叠状态 ========== */
+.side-nav-collapsed .sider-menu {
+  padding: 0 8px;
+  align-items: center;
+}
+
+.side-nav-collapsed .sider-menu-item {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.side-nav-collapsed .sider-menu-icon {
+  font-size: 20px;
+}
+
+/* ========== 折叠按钮 ========== */
+.sider-collapse-btn {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-bg-container);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+}
+
+.side-nav:hover .sider-collapse-btn {
+  opacity: 1;
+}
+
+.sider-collapse-btn:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(91, 141, 239, 0.3);
+  transform: translateY(-50%) scale(1.1);
+}

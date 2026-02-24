@@ -1,0 +1,388 @@
+/*
+  Settings Page - Serene Minimalism Design
+  与 Dashboard、ProjectList、MemberList 保持一致的设计风格
+*/
+
+/* Import fonts (same as Dashboard) */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* CSS Variables - 继承 Dashboard 的设计系统 */
+:root {
+  /* Light theme colors */
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-accent: #64748b;
+  --color-accent-light: #94a3b8;
+
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 48px;
+  --spacing-xl: 72px;
+
+  /* Typography */
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Monaco', monospace;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* Animation */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Main Container */
+.settings-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+
+  /* Initial state */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUp 0.6s var(--ease-smooth) forwards;
+}
+
+/* Section */
+.settings-section {
+  margin-bottom: var(--spacing-xl);
+  animation: slideUp 0.6s var(--ease-smooth) 0.2s both;
+}
+
+.settings-section:first-child {
+  animation-delay: 0.1s;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: -0.01em;
+}
+
+/* Theme Cards Container */
+.theme-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  max-width: 800px;
+}
+
+/* Theme Card */
+.theme-card {
+  position: relative;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.3s var(--ease-smooth);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-accent-light);
+}
+
+/* Selected State */
+.theme-card-selected {
+  border-color: var(--color-accent);
+  border-width: 2px;
+  box-shadow: 0 4px 16px rgba(100, 116, 139, 0.15);
+}
+
+/* Check Mark */
+.theme-card-check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 24px;
+  color: var(--color-accent);
+  z-index: 10;
+  animation: checkIn 0.3s var(--ease-smooth);
+}
+
+@keyframes checkIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Theme Preview */
+.theme-card-preview {
+  width: 100%;
+  height: 140px;
+  border-radius: 8px;
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  overflow: hidden;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+/* Preview Elements */
+.preview-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.preview-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+.preview-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.preview-line {
+  height: 8px;
+  border-radius: 4px;
+  width: 100%;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+.preview-line.short {
+  width: 60%;
+}
+
+.preview-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.preview-block {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+/* Minimal Preview */
+.minimal-preview {
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+}
+
+.minimal-preview .preview-avatar {
+  background: linear-gradient(135deg, #e8e8e8, #d4d4d4);
+}
+
+.minimal-preview .preview-line {
+  background: linear-gradient(90deg, #f0f0f0, #e8e8e8);
+}
+
+.minimal-preview .preview-block {
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+}
+
+/* Dark Preview */
+.dark-preview {
+  background: #1a1a1a;
+  border: 1px solid #262626;
+}
+
+.dark-preview .preview-avatar {
+  background: linear-gradient(135deg, #2d2d2d, #3a3a3a);
+}
+
+.dark-preview .preview-line {
+  background: linear-gradient(90deg, #333333, #3a3a3a);
+}
+
+.dark-preview .preview-block {
+  background: #242424;
+  border: 1px solid #2d2d2d;
+}
+
+/* Theme Info */
+.theme-card-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.theme-icon {
+  font-size: 20px;
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+.theme-card:hover .theme-icon {
+  transform: scale(1.1);
+}
+
+.theme-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* Language Buttons */
+.language-button {
+  min-width: 120px;
+  height: 40px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  transition: all 0.2s var(--ease-smooth);
+  box-shadow: var(--shadow-subtle);
+}
+
+.language-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settings-page {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .theme-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
+  .theme-card-preview {
+    height: 120px;
+  }
+}
+
+/* Dark theme support */
+[data-theme='dark'] .settings-page {
+  --color-bg: #000000;
+  --color-surface: #1f1f1f;
+  --color-text-primary: rgba(255, 255, 255, 0.85);
+  --color-text-secondary: rgba(255, 255, 255, 0.65);
+  --color-text-tertiary: rgba(255, 255, 255, 0.45);
+  --color-border: #303030;
+  --color-border-light: #262626;
+  --color-accent: #94a3b8;
+  --color-accent-light: #cbd5e1;
+
+  /* Adjust shadows for dark mode */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Adjust minimal preview in dark theme */
+[data-theme='dark'] .minimal-preview {
+  background: #2d2d2d;
+  border-color: #3a3a3a;
+}
+
+[data-theme='dark'] .minimal-preview .preview-avatar {
+  background: linear-gradient(135deg, #3a3a3a, #404040);
+}
+
+[data-theme='dark'] .minimal-preview .preview-line {
+  background: linear-gradient(90deg, #3a3a3a, #404040);
+}
+
+[data-theme='dark'] .minimal-preview .preview-block {
+  background: #333333;
+  border-color: #3a3a3a;
+}
+
+/* Adjust dark preview in dark theme */
+[data-theme='dark'] .dark-preview {
+  background: #0a0a0a;
+  border-color: #1a1a1a;
+}
+
+[data-theme='dark'] .theme-card {
+  background: var(--color-surface);
+  border-color: var(--color-border-light);
+}
+
+[data-theme='dark'] .theme-card:hover {
+  border-color: var(--color-accent-light);
+}
+
+[data-theme='dark'] .theme-card-selected {
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 16px rgba(148, 163, 184, 0.15);
+}
+
+/* Minimal theme - explicit light colors */
+[data-theme='minimal'] .settings-page {
+  --color-bg: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-text-primary: rgba(0, 0, 0, 0.88);
+  --color-text-secondary: rgba(0, 0, 0, 0.65);
+  --color-text-tertiary: rgba(0, 0, 0, 0.45);
+  --color-border: #f0f0f0;
+  --color-border-light: #f5f5f5;
+  --color-accent: #64748b;
+  --color-accent-light: #94a3b8;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .settings-page,
+  .settings-section,
+  .theme-card,
+  .theme-card-check,
+  .theme-card-preview,
+  .preview-avatar,
+  .preview-line,
+  .preview-block {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
