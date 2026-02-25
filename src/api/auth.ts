@@ -1,16 +1,9 @@
 import client from './client';
 import type { LoginRequest, LoginResponse, User, ApiResponse } from '@/types';
-import { mockLogin, mockGetCurrentUser } from './mock';
 import { getUserByUsername } from './user';
-
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 // 登录
 export const login = async (data: LoginRequest): Promise<LoginResponse> => {
-  if (USE_MOCK) {
-    return mockLogin(data);
-  }
-
   // 使用真实的 Teable API 进行登录验证
   try {
     // 1. 根据用户名查找用户
@@ -43,18 +36,11 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
 
 // 登出
 export const logout = async (): Promise<void> => {
-  if (USE_MOCK) {
-    return;
-  }
   await client.post('/auth/logout');
 };
 
 // 获取当前用户信息
 export const getCurrentUser = async (): Promise<User> => {
-  if (USE_MOCK) {
-    return mockGetCurrentUser();
-  }
-
   // 从本地存储获取用户信息
   const userStr = localStorage.getItem('user');
   if (!userStr) {
@@ -71,9 +57,6 @@ export const getCurrentUser = async (): Promise<User> => {
 
 // 刷新 Token
 export const refreshToken = async (): Promise<{ token: string; refreshToken: string }> => {
-  if (USE_MOCK) {
-    throw new Error('Mock mode does not support token refresh');
-  }
   const refreshToken = localStorage.getItem('refreshToken');
   const response = await client.post<ApiResponse<{ token: string; refreshToken: string }>>(
     '/auth/refresh',

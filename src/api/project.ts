@@ -12,14 +12,6 @@ import type {
   FilterParams,
 } from '@/types';
 import {
-  mockGetProjects,
-  mockGetProjectById,
-  mockCreateProject,
-  mockUpdateProject,
-  mockDeleteProject,
-  mockGetStats,
-} from './mock';
-import {
   getProjectsFromTable,
   getProjectByIdFromTable,
   createProjectInTable,
@@ -27,8 +19,6 @@ import {
   deleteProjectFromTable,
   getDashboardStatsFromTable,
 } from './realProjectApi';
-
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 // 获取项目列表（分页、筛选）
 export const getProjects = async (
