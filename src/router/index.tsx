@@ -9,16 +9,11 @@ import ProjectForm from '@/pages/Projects/ProjectForm';
 import MemberList from '@/pages/Members/MemberList';
 import MemberForm from '@/pages/Members/MemberForm';
 import Settings from '@/pages/Settings';
-import SimpleApiTest from '@/pages/SimpleApiTest';
 
 export const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />,
-  },
-  {
-    path: '/api-test',
-    element: <SimpleApiTest />,
   },
   {
     path: '/',
