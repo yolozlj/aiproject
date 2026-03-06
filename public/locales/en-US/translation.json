@@ -4,7 +4,22 @@
     "projects": "Projects",
     "members": "Members",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "changePassword": "Change Password"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "currentPasswordRequired": "Please enter current password",
+    "newPasswordRequired": "Please enter new password",
+    "confirmPasswordRequired": "Please confirm new password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "currentPasswordWrong": "Current password is incorrect",
+    "success": "Password changed successfully",
+    "failed": "Failed to change password"
   },
   "common": {
     "search": "Search",

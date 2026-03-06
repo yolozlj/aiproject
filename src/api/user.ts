@@ -330,5 +330,50 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   }
 }
 
+/**
+ * 修改密码
+ * @param username 用户名（用于查找真实的 Teable record ID）
+ * @param currentPassword 当前密码
+ * @param newPassword 新密码
+ * @param storedPassword 存储的密码（用于验证）
+ */
+export async function changePassword(
+  username: string,
+  currentPassword: string,
+  newPassword: string,
+  storedPassword: string
+): Promise<void> {
+  if (currentPassword !== storedPassword) {
+    throw new Error('current_password_wrong');
+  }
+
+  // 通过 username 查找真实的 Teable record ID（user.id 可能是自定义字段值，不是 record ID）
+  const response = await teableClient.get<TeableResponse<TeableUserFields>>(
+    `/table/${USERS_TABLE_ID}/record`,
+    { params: { fieldKeyType: 'name', take: 100 } }
+  );
+
+  const matchedRecord = (response.data.records || []).find(
+    (r) => r.fields && r.fields.username === username
+  );
+
+  if (!matchedRecord) {
+    throw new Error('user_not_found');
+  }
+
+  try {
+    await teableClient.patch(
+      `/table/${USERS_TABLE_ID}/record/${matchedRecord.id}`,
+      {
+        fieldKeyType: 'name',
+        record: { fields: { password: newPassword } },
+      }
+    );
+  } catch (error) {
+    console.error('修改密码失败:', error);
+    throw error;
+  }
+}
+
 // 兼容旧的导出方式
 export const getUsers = getUserList;

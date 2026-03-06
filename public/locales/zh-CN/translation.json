@@ -4,7 +4,22 @@
     "projects": "项目",
     "members": "成员",
     "settings": "设置",
-    "logout": "退出登录"
+    "logout": "退出登录",
+    "changePassword": "修改密码"
+  },
+  "changePassword": {
+    "title": "修改密码",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码",
+    "currentPasswordRequired": "请输入当前密码",
+    "newPasswordRequired": "请输入新密码",
+    "confirmPasswordRequired": "请确认新密码",
+    "passwordMismatch": "两次输入的密码不一致",
+    "passwordTooShort": "密码长度不能少于6位",
+    "currentPasswordWrong": "当前密码不正确",
+    "success": "密码修改成功",
+    "failed": "密码修改失败"
   },
   "common": {
     "search": "搜索",

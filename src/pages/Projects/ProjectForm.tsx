@@ -9,7 +9,10 @@ import type { CreateProjectRequest, UpdateProjectRequest } from '@/types';
 import { Loading } from '@/components/Common';
 import ProjectAttachmentUpload, { type AttachmentInfo } from '@/components/Project/ProjectAttachmentUpload';
 import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import './ProjectForm.css';
+
+const { RangePicker } = DatePicker;
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -37,8 +40,18 @@ const ProjectForm: React.FC = () => {
       const data = await getProjectById(projectId);
       form.setFieldsValue({
         ...data,
-        estimatedStartDate: data.estimatedStartDate ? dayjs(data.estimatedStartDate) : undefined,
-        estimatedEndDate: data.estimatedEndDate ? dayjs(data.estimatedEndDate) : undefined,
+        estimatedDateRange: (data.estimatedStartDate || data.estimatedEndDate)
+          ? [
+              data.estimatedStartDate ? dayjs(data.estimatedStartDate) : null,
+              data.estimatedEndDate ? dayjs(data.estimatedEndDate) : null,
+            ]
+          : undefined,
+        actualDateRange: (data.actualStartDate || data.actualEndDate)
+          ? [
+              data.actualStartDate ? dayjs(data.actualStartDate) : null,
+              data.actualEndDate ? dayjs(data.actualEndDate) : null,
+            ]
+          : undefined,
         tags: data.tags || [],
       });
 
@@ -65,10 +78,14 @@ const ProjectForm: React.FC = () => {
     try {
       const payload = {
         ...values,
-        estimatedStartDate: values.estimatedStartDate?.format('YYYY-MM-DD'),
-        estimatedEndDate: values.estimatedEndDate?.format('YYYY-MM-DD'),
+        estimatedStartDate: values.estimatedDateRange?.[0]?.format('YYYY-MM-DD'),
+        estimatedEndDate: values.estimatedDateRange?.[1]?.format('YYYY-MM-DD'),
+        actualStartDate: values.actualDateRange?.[0]?.format('YYYY-MM-DD'),
+        actualEndDate: values.actualDateRange?.[1]?.format('YYYY-MM-DD'),
         tags: values.tags || [],
       };
+      delete payload.estimatedDateRange;
+      delete payload.actualDateRange;
 
       if (isEdit && id) {
         // 编辑模式：直接更新
@@ -174,12 +191,52 @@ const ProjectForm: React.FC = () => {
             <TextArea rows={4} placeholder="请输入项目描述" />
           </Form.Item>
 
-          <Form.Item name="estimatedStartDate" label={t('project.estimatedStartDate')}>
-            <DatePicker style={{ width: '100%' }} />
+          {/* 预计时间范围 */}
+          <Form.Item
+            name="estimatedDateRange"
+            label={`${t('project.estimatedStartDate')} ~ ${t('project.estimatedEndDate')}`}
+          >
+            <RangePicker
+              style={{ width: '100%' }}
+              placeholder={[t('project.estimatedStartDate'), t('project.estimatedEndDate')]}
+              disabledDate={(current) => current && current.isBefore(dayjs().subtract(10, 'year'))}
+            />
           </Form.Item>
 
-          <Form.Item name="estimatedEndDate" label={t('project.estimatedEndDate')}>
-            <DatePicker style={{ width: '100%' }} />
+          {/* 实际时间范围 */}
+          <Form.Item
+            name="actualDateRange"
+            label={`${t('project.actualStartDate')} ~ ${t('project.actualEndDate')}`}
+            dependencies={['estimatedDateRange']}
+            rules={[
+              ({ getFieldValue }) => ({
+                validator(_, value: [Dayjs, Dayjs] | undefined) {
+                  if (!value || !value[0]) return Promise.resolve();
+                  const estimatedRange = getFieldValue('estimatedDateRange') as [Dayjs, Dayjs] | undefined;
+                  const estimatedStart = estimatedRange?.[0];
+                  if (estimatedStart && value[0].isBefore(estimatedStart, 'day')) {
+                    return Promise.reject(new Error('实际开始时间不能早于预计开始时间'));
+                  }
+                  if (value[1] && value[0].isAfter(value[1], 'day')) {
+                    return Promise.reject(new Error('实际完成时间不能早于实际开始时间'));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <RangePicker
+              style={{ width: '100%' }}
+              placeholder={[t('project.actualStartDate'), t('project.actualEndDate')]}
+              disabledDate={(current) => {
+                const estimatedRange = form.getFieldValue('estimatedDateRange') as [Dayjs, Dayjs] | undefined;
+                const estimatedStart = estimatedRange?.[0];
+                if (estimatedStart && current && current.isBefore(estimatedStart, 'day')) {
+                  return true;
+                }
+                return false;
+              }}
+            />
           </Form.Item>
 
           <Form.Item name="remarks" label={t('project.remarks')}>

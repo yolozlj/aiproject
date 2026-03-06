@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Card, Table, Button, Space, Tag, Select, Input } from 'antd';
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Space, Tag, Select, Input, DatePicker } from 'antd';
+import { PlusOutlined, SearchOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProjectStore } from '@/store';
@@ -8,7 +8,11 @@ import { usePermission } from '@/store/authStore';
 import type { Project, ProjectType, ProjectStatus, Priority } from '@/types';
 import ProjectQuickActions from '@/components/Project/ProjectQuickActions';
 import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import './ProjectList.css';
+
+const { RangePicker } = DatePicker;
+type DateRange = [Dayjs | null, Dayjs | null] | null;
 
 const { Option } = Select;
 
@@ -27,12 +31,31 @@ const ProjectList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | undefined>();
   const [priorityFilter, setPriorityFilter] = useState<Priority | undefined>();
   const [initialFilterApplied, setInitialFilterApplied] = useState(false);
+  // 日期范围筛选（客户端过滤）
+  const [actualEndRange, setActualEndRange] = useState<DateRange>(null);
+  const [createdAtRange, setCreatedAtRange] = useState<DateRange>(null);
+  // 筛选区折叠状态
+  const [filterCollapsed, setFilterCollapsed] = useState(true);
 
-  // 使用 useMemo 确保 dataSource 更新
+  // 使用 useMemo 确保 dataSource 更新，并在客户端应用日期范围过滤
   const tableData = useMemo(() => {
-    console.log('🔔 [ProjectList] tableData 重新计算，数量:', projects.length);
-    return projects.map(p => ({ ...p }));
-  }, [projects]);
+    let data = projects.map(p => ({ ...p }));
+
+    const inRange = (date: Date | undefined, range: DateRange) => {
+      if (!range || (!range[0] && !range[1])) return true;
+      if (!date) return false;
+      const d = dayjs(date);
+      if (range[0] && d.isBefore(range[0], 'day')) return false;
+      if (range[1] && d.isAfter(range[1], 'day')) return false;
+      return true;
+    };
+
+    if (actualEndRange) data = data.filter(p => inRange(p.actualEndDate, actualEndRange));
+    if (createdAtRange) data = data.filter(p => inRange(p.createdAt, createdAtRange));
+
+    console.log('🔔 [ProjectList] tableData 重新计算，数量:', data.length);
+    return data;
+  }, [projects, actualEndRange, createdAtRange]);
 
   // 监听 projects 变化
   useEffect(() => {
@@ -95,12 +118,12 @@ const ProjectList: React.FC = () => {
 
   const handleReset = async () => {
     console.log('🔄 [ProjectList] 重置筛选');
-    // 清空所有筛选条件
     setSearchText('');
     setTypeFilter(undefined);
     setStatusFilter(undefined);
     setPriorityFilter(undefined);
-    // 清空筛选并重新加载数据
+    setActualEndRange(null);
+    setCreatedAtRange(null);
     await setFilters({});
     console.log('✅ [ProjectList] 重置完成');
   };
@@ -209,6 +232,7 @@ const ProjectList: React.FC = () => {
       </div>
 
       <Card bordered={false} className="filter-card">
+        {/* 第一行：始终显示 */}
         <Space size="middle" wrap>
           <Input
             placeholder="搜索项目名称或描述"
@@ -217,14 +241,12 @@ const ProjectList: React.FC = () => {
             onChange={(e) => setSearchText(e.target.value)}
             onPressEnter={handleSearch}
             allowClear
-            style={{ width: 240 }}
+            style={{ width: 220 }}
           />
           <Select
             placeholder={t('project.type')}
             value={typeFilter}
-            onChange={(value) => {
-              setTypeFilter(value);
-            }}
+            onChange={(value) => setTypeFilter(value)}
             allowClear
             style={{ width: 150 }}
           >
@@ -234,11 +256,9 @@ const ProjectList: React.FC = () => {
           <Select
             placeholder={t('project.status')}
             value={statusFilter}
-            onChange={(value) => {
-              setStatusFilter(value);
-            }}
+            onChange={(value) => setStatusFilter(value)}
             allowClear
-            style={{ width: 150 }}
+            style={{ width: 140 }}
           >
             <Option value="submitted">{t('project.status_submitted')}</Option>
             <Option value="pending_review">{t('project.status_review')}</Option>
@@ -248,22 +268,45 @@ const ProjectList: React.FC = () => {
           <Select
             placeholder={t('project.priority')}
             value={priorityFilter}
-            onChange={(value) => {
-              setPriorityFilter(value);
-            }}
+            onChange={(value) => setPriorityFilter(value)}
             allowClear
-            style={{ width: 120 }}
+            style={{ width: 110 }}
           >
             <Option value="low">{t('project.priority_low')}</Option>
             <Option value="medium">{t('project.priority_medium')}</Option>
             <Option value="high">{t('project.priority_high')}</Option>
             <Option value="urgent">{t('project.priority_urgent')}</Option>
           </Select>
-          <Button type="primary" onClick={handleSearch}>
-            {t('common.filter')}
-          </Button>
+          <Button type="primary" onClick={handleSearch}>查询</Button>
           <Button onClick={handleReset}>{t('common.reset')}</Button>
+          <Button
+            type="link"
+            size="small"
+            icon={filterCollapsed ? <DownOutlined /> : <UpOutlined />}
+            onClick={() => setFilterCollapsed(!filterCollapsed)}
+            style={{ padding: '0 4px' }}
+          >
+            {filterCollapsed ? '展开' : '收起'}
+          </Button>
         </Space>
+
+        {/* 第二行：折叠时隐藏 */}
+        {!filterCollapsed && (
+          <Space size="middle" wrap style={{ marginTop: 12 }}>
+            <RangePicker
+              placeholder={['实际完成时间 起', '实际完成时间 止']}
+              value={actualEndRange}
+              onChange={(val) => setActualEndRange(val as DateRange)}
+              style={{ width: 300 }}
+            />
+            <RangePicker
+              placeholder={['创建时间 起', '创建时间 止']}
+              value={createdAtRange}
+              onChange={(val) => setCreatedAtRange(val as DateRange)}
+              style={{ width: 280 }}
+            />
+          </Space>
+        )}
       </Card>
 
       <Card bordered={false} style={{ marginTop: 16 }}>
