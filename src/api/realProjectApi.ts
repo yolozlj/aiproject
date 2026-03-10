@@ -134,11 +134,11 @@ export async function getProjectsFromTable(
     // TODO: 等 Teable API 筛选修复后，移除此前端筛选逻辑
     const hasFilters = params.type || params.status || params.priority || searchKeyword || params.submitter || params.owner;
 
-    // 如果有筛选条件，暂时不传给 API（因为 API 不生效）
+    // 始终获取全量数据，前端统一做筛选和分页（数据量小，避免分页 total 不准确问题）
     const apiQueryParams: TeableQueryParams = {
       fieldKeyType: 'name',
-      take: hasFilters ? 100 : pageSize, // 有筛选时获取更多数据
-      skip: hasFilters ? 0 : skip,
+      take: 500,
+      skip: 0,
     };
 
     console.log('📡 fetchProjects 被调用，当前 filters:', params);
@@ -195,16 +195,16 @@ export async function getProjectsFromTable(
       console.log(`🔍 按负责人筛选 (${params.owner}): ${filteredProjects.length} 个项目`);
     }
 
-    // 🔍 前端分页（临时方案）
+    // 前端分页
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const paginatedProjects = hasFilters ? filteredProjects.slice(startIndex, endIndex) : filteredProjects;
+    const paginatedProjects = filteredProjects.slice(startIndex, endIndex);
 
-    console.log(`✅ 最终返回 ${paginatedProjects.length} 个项目（共 ${filteredProjects.length} 个符合条件）`);
+    console.log(`✅ 最终返回 ${paginatedProjects.length} 个项目（共 ${filteredProjects.length} 个，第 ${page} 页）`);
 
     return {
       data: paginatedProjects,
-      total: hasFilters ? filteredProjects.length : records.length,
+      total: filteredProjects.length,
       page,
       pageSize,
     };

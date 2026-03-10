@@ -32,11 +32,16 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({ loading: true });
     try {
       const state = get();
+      const currentPage = page ?? state.page;
+      const currentPageSize = pageSize ?? state.pageSize;
+      // 同步更新 page/pageSize 状态，确保翻页后状态一致
+      set({ page: currentPage, pageSize: currentPageSize });
+
       console.log('📡 fetchProjects 被调用，当前 filters:', state.filters);
 
       const requestParams = {
-        page: page ?? state.page,
-        pageSize: pageSize ?? state.pageSize,
+        page: currentPage,
+        pageSize: currentPageSize,
         ...state.filters,
       };
 
