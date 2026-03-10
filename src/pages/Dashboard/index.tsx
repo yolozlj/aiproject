@@ -96,22 +96,29 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Pending Review */}
+          {/* Submitted / 待领取 */}
           <div className="stat-card stat-card-2">
+            <div className="stat-label">待领取</div>
+            <div className="stat-value">{stats.submitted}</div>
+            <div className="stat-meta">需求提交</div>
+          </div>
+
+          {/* Pending Review */}
+          <div className="stat-card stat-card-3">
             <div className="stat-label">待评审</div>
             <div className="stat-value">{stats.pendingReview}</div>
             <div className="stat-meta">需要处理</div>
           </div>
 
           {/* In Progress */}
-          <div className="stat-card stat-card-3">
+          <div className="stat-card stat-card-4">
             <div className="stat-label">开发中</div>
             <div className="stat-value">{stats.inProgress}</div>
             <div className="stat-meta">进行中</div>
           </div>
 
           {/* Completed */}
-          <div className="stat-card stat-card-4">
+          <div className="stat-card stat-card-5">
             <div className="stat-label">已完成</div>
             <div className="stat-value">{stats.completed}</div>
             <div className="stat-meta">
@@ -191,6 +198,20 @@ const Dashboard: React.FC = () => {
               <PlusOutlined />
             </div>
             <div className="action-label">创建新项目</div>
+            <div className="action-arrow">→</div>
+          </button>
+
+          <button
+            className="action-card"
+            onClick={() => navigate('/projects?status=submitted')}
+          >
+            <div className="action-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M22 12H16L14 15H10L8 12H2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M5.45 5.11L2 12V18C2 18.5304 2.21071 19.0391 2.58579 19.4142C2.96086 19.7893 3.46957 20 4 20H20C20.5304 20 21.0391 19.7893 21.4142 19.4142C21.7893 19.0391 22 18.5304 22 18V12L18.55 5.11C18.3844 4.77679 18.1292 4.49637 17.813 4.30028C17.4967 4.10419 17.1321 4.0002 16.76 4H7.24C6.86792 4.0002 6.50326 4.10419 6.18704 4.30028C5.87083 4.49637 5.61558 4.77679 5.45 5.11Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div className="action-label">待领取项目</div>
             <div className="action-arrow">→</div>
           </button>
 

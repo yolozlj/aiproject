@@ -132,7 +132,7 @@ export async function getProjectsFromTable(
   try {
     // 🚨 临时方案：由于 Teable API 筛选不生效，先获取所有数据再在前端筛选
     // TODO: 等 Teable API 筛选修复后，移除此前端筛选逻辑
-    const hasFilters = params.type || params.status || params.priority || searchKeyword;
+    const hasFilters = params.type || params.status || params.priority || searchKeyword || params.submitter || params.owner;
 
     // 如果有筛选条件，暂时不传给 API（因为 API 不生效）
     const apiQueryParams: TeableQueryParams = {
@@ -177,6 +177,22 @@ export async function getProjectsFromTable(
         (p.description && p.description.toLowerCase().includes(searchKeyword.toLowerCase()))
       );
       console.log(`🔍 按关键词筛选 (${searchKeyword}): ${filteredProjects.length} 个项目`);
+    }
+
+    if (params.submitter) {
+      const kw = params.submitter.toLowerCase();
+      filteredProjects = filteredProjects.filter(p =>
+        p.submitterName && p.submitterName.toLowerCase().includes(kw)
+      );
+      console.log(`🔍 按提交人筛选 (${params.submitter}): ${filteredProjects.length} 个项目`);
+    }
+
+    if (params.owner) {
+      const kw = params.owner.toLowerCase();
+      filteredProjects = filteredProjects.filter(p =>
+        p.ownerName && p.ownerName.toLowerCase().includes(kw)
+      );
+      console.log(`🔍 按负责人筛选 (${params.owner}): ${filteredProjects.length} 个项目`);
     }
 
     // 🔍 前端分页（临时方案）

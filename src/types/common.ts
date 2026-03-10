@@ -44,6 +44,8 @@ export interface FilterParams {
   priority?: Priority;
   keyword?: string; // 搜索关键词（搜索项目名称和描述）
   search?: string; // 保留兼容性，实际使用 keyword
+  submitter?: string; // 提交人姓名
+  owner?: string; // 负责人姓名
   startDate?: string;
   endDate?: string;
   sortBy?: string; // 排序字段

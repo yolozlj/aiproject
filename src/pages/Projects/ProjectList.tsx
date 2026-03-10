@@ -27,6 +27,8 @@ const ProjectList: React.FC = () => {
 
   const { canCreate } = usePermission();
   const [searchText, setSearchText] = useState('');
+  const [submitterFilter, setSubmitterFilter] = useState('');
+  const [ownerFilter, setOwnerFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState<ProjectType | undefined>();
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | undefined>();
   const [priorityFilter, setPriorityFilter] = useState<Priority | undefined>();
@@ -107,6 +109,8 @@ const ProjectList: React.FC = () => {
     // 构建筛选参数，只传递有值的参数
     const filters: any = {};
     if (searchText) filters.keyword = searchText;
+    if (submitterFilter) filters.submitter = submitterFilter;
+    if (ownerFilter) filters.owner = ownerFilter;
     if (typeFilter) filters.type = typeFilter;
     if (statusFilter) filters.status = statusFilter;
     if (priorityFilter) filters.priority = priorityFilter;
@@ -119,6 +123,8 @@ const ProjectList: React.FC = () => {
   const handleReset = async () => {
     console.log('🔄 [ProjectList] 重置筛选');
     setSearchText('');
+    setSubmitterFilter('');
+    setOwnerFilter('');
     setTypeFilter(undefined);
     setStatusFilter(undefined);
     setPriorityFilter(undefined);
@@ -241,14 +247,14 @@ const ProjectList: React.FC = () => {
             onChange={(e) => setSearchText(e.target.value)}
             onPressEnter={handleSearch}
             allowClear
-            style={{ width: 220 }}
+            style={{ width: 180 }}
           />
           <Select
             placeholder={t('project.type')}
             value={typeFilter}
             onChange={(value) => setTypeFilter(value)}
             allowClear
-            style={{ width: 150 }}
+            style={{ width: 130 }}
           >
             <Option value="data_development">{t('project.type_data')}</Option>
             <Option value="system_development">{t('project.type_system')}</Option>
@@ -258,7 +264,7 @@ const ProjectList: React.FC = () => {
             value={statusFilter}
             onChange={(value) => setStatusFilter(value)}
             allowClear
-            style={{ width: 140 }}
+            style={{ width: 120 }}
           >
             <Option value="submitted">{t('project.status_submitted')}</Option>
             <Option value="pending_review">{t('project.status_review')}</Option>
@@ -270,13 +276,29 @@ const ProjectList: React.FC = () => {
             value={priorityFilter}
             onChange={(value) => setPriorityFilter(value)}
             allowClear
-            style={{ width: 110 }}
+            style={{ width: 100 }}
           >
             <Option value="low">{t('project.priority_low')}</Option>
             <Option value="medium">{t('project.priority_medium')}</Option>
             <Option value="high">{t('project.priority_high')}</Option>
             <Option value="urgent">{t('project.priority_urgent')}</Option>
           </Select>
+          <Input
+            placeholder="提交人"
+            value={submitterFilter}
+            onChange={(e) => setSubmitterFilter(e.target.value)}
+            onPressEnter={handleSearch}
+            allowClear
+            style={{ width: 120 }}
+          />
+          <Input
+            placeholder="负责人"
+            value={ownerFilter}
+            onChange={(e) => setOwnerFilter(e.target.value)}
+            onPressEnter={handleSearch}
+            allowClear
+            style={{ width: 120 }}
+          />
           <Button type="primary" onClick={handleSearch}>查询</Button>
           <Button onClick={handleReset}>{t('common.reset')}</Button>
           <Button
