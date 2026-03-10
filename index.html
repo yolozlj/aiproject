@@ -5,6 +5,23 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>aiproject</title>
+    <script>
+      // Restore path redirected by 404.html
+      (function (l) {
+        if (l.search[1] === 'p' && l.search.indexOf('?p=/') === 0) {
+          var decoded = l.search.slice(1).split('&').reduce(function (acc, s) {
+            var parts = s.split('=');
+            if (parts[0] === 'p') acc.path = decodeURIComponent(parts[1].replace(/~and~/g, '&'));
+            if (parts[0] === 'q') acc.query = '?' + decodeURIComponent(parts[1].replace(/~and~/g, '&'));
+            return acc;
+          }, { path: '', query: '' });
+          window.history.replaceState(
+            null, null,
+            l.pathname + decoded.path + decoded.query + l.hash
+          );
+        }
+      }(window.location));
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -10,11 +10,12 @@ import MemberList from '@/pages/Members/MemberList';
 import MemberForm from '@/pages/Members/MemberForm';
 import Settings from '@/pages/Settings';
 
-export const router = createBrowserRouter([
-  {
-    path: '/login',
-    element: <Login />,
-  },
+export const router = createBrowserRouter(
+  [
+    {
+      path: '/login',
+      element: <Login />,
+    },
   {
     path: '/',
     element: (
@@ -79,4 +80,6 @@ export const router = createBrowserRouter([
     path: '*',
     element: <Navigate to="/" replace />,
   },
-]);
+],
+{ basename: '/aiproject' }
+);
