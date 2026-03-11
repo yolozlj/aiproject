@@ -48,6 +48,10 @@ export interface FilterParams {
   owner?: string; // 负责人姓名
   startDate?: string;
   endDate?: string;
+  actualEndDateStart?: string; // 实际完成时间范围起
+  actualEndDateEnd?: string;   // 实际完成时间范围止
+  createdAtStart?: string;     // 创建时间范围起
+  createdAtEnd?: string;       // 创建时间范围止
   sortBy?: string; // 排序字段
   sortOrder?: 'asc' | 'desc'; // 排序方向
 }

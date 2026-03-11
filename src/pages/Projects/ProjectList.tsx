@@ -39,25 +39,7 @@ const ProjectList: React.FC = () => {
   // 筛选区折叠状态
   const [filterCollapsed, setFilterCollapsed] = useState(true);
 
-  // 使用 useMemo 确保 dataSource 更新，并在客户端应用日期范围过滤
-  const tableData = useMemo(() => {
-    let data = projects.map(p => ({ ...p }));
-
-    const inRange = (date: Date | undefined, range: DateRange) => {
-      if (!range || (!range[0] && !range[1])) return true;
-      if (!date) return false;
-      const d = dayjs(date);
-      if (range[0] && d.isBefore(range[0], 'day')) return false;
-      if (range[1] && d.isAfter(range[1], 'day')) return false;
-      return true;
-    };
-
-    if (actualEndRange) data = data.filter(p => inRange(p.actualEndDate, actualEndRange));
-    if (createdAtRange) data = data.filter(p => inRange(p.createdAt, createdAtRange));
-
-    console.log('🔔 [ProjectList] tableData 重新计算，数量:', data.length);
-    return data;
-  }, [projects, actualEndRange, createdAtRange]);
+  const tableData = useMemo(() => projects.map(p => ({ ...p })), [projects]);
 
   // 监听 projects 变化
   useEffect(() => {
@@ -97,8 +79,28 @@ const ProjectList: React.FC = () => {
       setFilters(filters);
       setInitialFilterApplied(true);
     } else {
-      // 没有 URL 参数，正常加载
-      console.log('📋 无 URL 筛选参数，加载全部项目');
+      // 没有 URL 参数，从 store 已有的 filters 恢复输入框状态
+      const storeFilters = store.filters;
+      if (storeFilters.keyword) setSearchText(storeFilters.keyword);
+      if (storeFilters.submitter) setSubmitterFilter(storeFilters.submitter);
+      if (storeFilters.owner) setOwnerFilter(storeFilters.owner);
+      if (storeFilters.type) setTypeFilter(storeFilters.type);
+      if (storeFilters.status) setStatusFilter(storeFilters.status);
+      if (storeFilters.priority) setPriorityFilter(storeFilters.priority);
+      if (storeFilters.actualEndDateStart || storeFilters.actualEndDateEnd) {
+        setActualEndRange([
+          storeFilters.actualEndDateStart ? dayjs(storeFilters.actualEndDateStart) : null,
+          storeFilters.actualEndDateEnd ? dayjs(storeFilters.actualEndDateEnd) : null,
+        ]);
+        setFilterCollapsed(false);
+      }
+      if (storeFilters.createdAtStart || storeFilters.createdAtEnd) {
+        setCreatedAtRange([
+          storeFilters.createdAtStart ? dayjs(storeFilters.createdAtStart) : null,
+          storeFilters.createdAtEnd ? dayjs(storeFilters.createdAtEnd) : null,
+        ]);
+        setFilterCollapsed(false);
+      }
       fetchProjects();
       setInitialFilterApplied(true);
     }
@@ -106,7 +108,6 @@ const ProjectList: React.FC = () => {
   }, []);
 
   const handleSearch = async () => {
-    // 构建筛选参数，只传递有值的参数
     const filters: any = {};
     if (searchText) filters.keyword = searchText;
     if (submitterFilter) filters.submitter = submitterFilter;
@@ -114,6 +115,10 @@ const ProjectList: React.FC = () => {
     if (typeFilter) filters.type = typeFilter;
     if (statusFilter) filters.status = statusFilter;
     if (priorityFilter) filters.priority = priorityFilter;
+    if (actualEndRange?.[0]) filters.actualEndDateStart = actualEndRange[0].startOf('day').toISOString();
+    if (actualEndRange?.[1]) filters.actualEndDateEnd = actualEndRange[1].endOf('day').toISOString();
+    if (createdAtRange?.[0]) filters.createdAtStart = createdAtRange[0].startOf('day').toISOString();
+    if (createdAtRange?.[1]) filters.createdAtEnd = createdAtRange[1].endOf('day').toISOString();
 
     console.log('🔍 [ProjectList] 执行筛选，参数:', filters);
     await setFilters(filters);
@@ -210,6 +215,12 @@ const ProjectList: React.FC = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: Date) => dayjs(date).format('YYYY-MM-DD'),
+    },
+    {
+      title: t('project.actualEndDate'),
+      dataIndex: 'actualEndDate',
+      key: 'actualEndDate',
+      render: (date: Date | undefined) => date ? dayjs(date).format('YYYY-MM-DD') : '-',
     },
     {
       title: t('common.actions'),

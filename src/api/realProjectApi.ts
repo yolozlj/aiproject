@@ -195,6 +195,27 @@ export async function getProjectsFromTable(
       console.log(`🔍 按负责人筛选 (${params.owner}): ${filteredProjects.length} 个项目`);
     }
 
+    if (params.actualEndDateStart || params.actualEndDateEnd) {
+      filteredProjects = filteredProjects.filter(p => {
+        if (!p.actualEndDate) return false;
+        const d = new Date(p.actualEndDate).getTime();
+        if (params.actualEndDateStart && d < new Date(params.actualEndDateStart).getTime()) return false;
+        if (params.actualEndDateEnd && d > new Date(params.actualEndDateEnd).getTime()) return false;
+        return true;
+      });
+      console.log(`🔍 按实际完成时间筛选: ${filteredProjects.length} 个项目`);
+    }
+
+    if (params.createdAtStart || params.createdAtEnd) {
+      filteredProjects = filteredProjects.filter(p => {
+        const d = new Date(p.createdAt).getTime();
+        if (params.createdAtStart && d < new Date(params.createdAtStart).getTime()) return false;
+        if (params.createdAtEnd && d > new Date(params.createdAtEnd).getTime()) return false;
+        return true;
+      });
+      console.log(`🔍 按创建时间筛选: ${filteredProjects.length} 个项目`);
+    }
+
     // 前端分页
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
