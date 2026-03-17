@@ -254,6 +254,9 @@ export async function getProjectsFromTable(
       }
     }
 
+    // 按创建时间降序排列
+    filteredProjects.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
     // 前端分页
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
