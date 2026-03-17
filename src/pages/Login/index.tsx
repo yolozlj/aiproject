@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store';
 import { useTranslation } from 'react-i18next';
 import './Login.css';
@@ -90,6 +90,12 @@ const Login: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <Link to="/register" style={{ color: 'var(--color-accent, #64748b)', fontSize: 14 }}>
+            {t('auth.register')}
+          </Link>
+        </div>
       </Card>
     </div>
   );

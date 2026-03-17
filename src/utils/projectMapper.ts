@@ -124,8 +124,7 @@ export function mapTeableToProject(teableFields: TeableProjectFields, recordId: 
     participantIds: parseJsonField(teableFields.participant_ids),
 
     // 时间信息
-    estimatedStartDate: teableFields.estimated_start_date ? new Date(teableFields.estimated_start_date) : undefined,
-    estimatedEndDate: teableFields.estimated_end_date ? new Date(teableFields.estimated_end_date) : undefined,
+    expectedEndDate: teableFields.expected_end_date ? new Date(teableFields.expected_end_date) : undefined,
     actualStartDate: teableFields.actual_start_date ? new Date(teableFields.actual_start_date) : undefined,
     actualEndDate: teableFields.actual_end_date ? new Date(teableFields.actual_end_date) : undefined,
     createdAt: teableFields.created_at ? new Date(teableFields.created_at) : new Date(),
@@ -173,8 +172,7 @@ export function mapProjectToTeable(project: Partial<Project>): Partial<TeablePro
     return date.toISOString();
   };
 
-  if (project.estimatedStartDate !== undefined) teableFields.estimated_start_date = formatDateField(project.estimatedStartDate);
-  if (project.estimatedEndDate !== undefined) teableFields.estimated_end_date = formatDateField(project.estimatedEndDate);
+  if (project.expectedEndDate !== undefined) teableFields.expected_end_date = formatDateField(project.expectedEndDate);
   if (project.actualStartDate !== undefined) teableFields.actual_start_date = formatDateField(project.actualStartDate);
   if (project.actualEndDate !== undefined) teableFields.actual_end_date = formatDateField(project.actualEndDate);
   if (project.createdAt !== undefined) teableFields.created_at = formatDateField(project.createdAt);

@@ -124,8 +124,7 @@ export interface TeableProjectFields {
   owner_id?: string;                   // fldwANT0tqNN4M97yvQ
   owner_name?: string;                 // fldWm8agqkosmfJSzvh
   participant_ids?: string | null;     // fld2wDVKGYj6yzqgpHc (JSON array string, null to clear)
-  estimated_start_date?: string;       // fldEILgUcagqd4qnT1w (ISO 8601)
-  estimated_end_date?: string;         // flde3JT53TzfGhiKGwW (ISO 8601)
+  expected_end_date?: string;          // 待填写 (ISO 8601) - 期望完成时间
   actual_start_date?: string;          // fldjE5YswRM2BZ178xf (ISO 8601)
   actual_end_date?: string;            // fldWgNF7P4aiPMNdGwU (ISO 8601)
   attachments?: string | null;         // fldphqYiSDfVyNSZOn2 (JSON array string, null to clear)
@@ -148,8 +147,7 @@ export const PROJECT_FIELD_IDS = {
   owner_id: 'fldwANT0tqNN4M97yvQ',
   owner_name: 'fldWm8agqkosmfJSzvh',
   participant_ids: 'fld2wDVKGYj6yzqgpHc',
-  estimated_start_date: 'fldEILgUcagqd4qnT1w',
-  estimated_end_date: 'flde3JT53TzfGhiKGwW',
+  expected_end_date: '待填写',
   actual_start_date: 'fldjE5YswRM2BZ178xf',
   actual_end_date: 'fldWgNF7P4aiPMNdGwU',
   attachments: 'fldphqYiSDfVyNSZOn2',

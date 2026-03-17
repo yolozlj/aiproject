@@ -5,14 +5,13 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { createProject, updateProject, getProjectById } from '@/api';
 import { uploadAttachmentToProject } from '@/api/attachmentApi';
+import { getUserList } from '@/api/user';
 import type { CreateProjectRequest, UpdateProjectRequest } from '@/types';
+import type { User } from '@/types/user';
 import { Loading } from '@/components/Common';
 import ProjectAttachmentUpload, { type AttachmentInfo } from '@/components/Project/ProjectAttachmentUpload';
 import dayjs from 'dayjs';
-import type { Dayjs } from 'dayjs';
 import './ProjectForm.css';
-
-const { RangePicker } = DatePicker;
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -26,13 +25,45 @@ const ProjectForm: React.FC = () => {
   const [initialLoading, setInitialLoading] = useState(!!id);
   const [attachments, setAttachments] = useState<AttachmentInfo[]>([]);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]); // 待上传的文件（新建项目时）
+  const [developers, setDevelopers] = useState<User[]>([]);
+  const [projectManagers, setProjectManagers] = useState<User[]>([]);
+  const [currentType, setCurrentType] = useState<string>('data_development');
+  const [ownerDisabled, setOwnerDisabled] = useState(false);
   const isEdit = !!id;
 
   useEffect(() => {
+    // 获取全量用户后前端按角色过滤（Teable API role 过滤不稳定，与项目列表策略一致）
+    getUserList({ pageSize: 500 }).then((result) => {
+      const active = result.data.filter(u => u.status === 'active');
+      setDevelopers(active.filter(u => u.role === 'developer'));
+      setProjectManagers(active.filter(u => u.role === 'project_manager'));
+    }).catch(err => {
+      console.error('加载用户列表失败:', err);
+    });
+
     if (id) {
       fetchProject(id);
     }
   }, [id]);
+
+  // 类型变化联动逻辑
+  const handleTypeChange = (value: string) => {
+    setCurrentType(value);
+    if (value === 'system_development') {
+      // 自动填入董文胜
+      const dongWensheng = projectManagers.find(pm => pm.fullName === '董文胜');
+      if (dongWensheng) {
+        form.setFieldValue('ownerId', dongWensheng.id);
+      } else {
+        // 如果列表中没有，清空
+        form.setFieldValue('ownerId', undefined);
+      }
+      setOwnerDisabled(true);
+    } else {
+      form.setFieldValue('ownerId', undefined);
+      setOwnerDisabled(false);
+    }
+  };
 
   const fetchProject = async (projectId: string) => {
     setInitialLoading(true);
@@ -40,18 +71,7 @@ const ProjectForm: React.FC = () => {
       const data = await getProjectById(projectId);
       form.setFieldsValue({
         ...data,
-        estimatedDateRange: (data.estimatedStartDate || data.estimatedEndDate)
-          ? [
-              data.estimatedStartDate ? dayjs(data.estimatedStartDate) : null,
-              data.estimatedEndDate ? dayjs(data.estimatedEndDate) : null,
-            ]
-          : undefined,
-        actualDateRange: (data.actualStartDate || data.actualEndDate)
-          ? [
-              data.actualStartDate ? dayjs(data.actualStartDate) : null,
-              data.actualEndDate ? dayjs(data.actualEndDate) : null,
-            ]
-          : undefined,
+        expectedEndDate: data.expectedEndDate ? dayjs(data.expectedEndDate) : undefined,
         tags: data.tags || [],
       });
 
@@ -76,16 +96,20 @@ const ProjectForm: React.FC = () => {
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
+      // 根据 ownerId 查找对应的 ownerName
+      let ownerName: string | undefined;
+      if (values.ownerId) {
+        const allUsers = [...developers, ...projectManagers];
+        const owner = allUsers.find(u => u.id === values.ownerId);
+        ownerName = owner?.fullName;
+      }
+
       const payload = {
         ...values,
-        estimatedStartDate: values.estimatedDateRange?.[0]?.format('YYYY-MM-DD'),
-        estimatedEndDate: values.estimatedDateRange?.[1]?.format('YYYY-MM-DD'),
-        actualStartDate: values.actualDateRange?.[0]?.format('YYYY-MM-DD'),
-        actualEndDate: values.actualDateRange?.[1]?.format('YYYY-MM-DD'),
+        ownerName,
+        expectedEndDate: values.expectedEndDate?.format('YYYY-MM-DD'),
         tags: values.tags || [],
       };
-      delete payload.estimatedDateRange;
-      delete payload.actualDateRange;
 
       if (isEdit && id) {
         // 编辑模式：直接更新
@@ -164,7 +188,7 @@ const ProjectForm: React.FC = () => {
             label={t('project.type')}
             rules={[{ required: true, message: '请选择项目类型' }]}
           >
-            <Select>
+            <Select onChange={handleTypeChange}>
               <Option value="data_development">{t('project.type_data')}</Option>
               <Option value="system_development">{t('project.type_system')}</Option>
             </Select>
@@ -191,52 +215,43 @@ const ProjectForm: React.FC = () => {
             <TextArea rows={4} placeholder="请输入项目描述" />
           </Form.Item>
 
-          {/* 预计时间范围 */}
+          {/* 期望完成时间 */}
           <Form.Item
-            name="estimatedDateRange"
-            label={`${t('project.estimatedStartDate')} ~ ${t('project.estimatedEndDate')}`}
+            name="expectedEndDate"
+            label="期望完成时间（可选）"
           >
-            <RangePicker
+            <DatePicker
               style={{ width: '100%' }}
-              placeholder={[t('project.estimatedStartDate'), t('project.estimatedEndDate')]}
-              disabledDate={(current) => current && current.isBefore(dayjs().subtract(10, 'year'))}
+              placeholder="请选择期望完成时间"
             />
           </Form.Item>
 
-          {/* 实际时间范围 */}
+          {/* 指定负责人 */}
           <Form.Item
-            name="actualDateRange"
-            label={`${t('project.actualStartDate')} ~ ${t('project.actualEndDate')}`}
-            dependencies={['estimatedDateRange']}
-            rules={[
-              ({ getFieldValue }) => ({
-                validator(_, value: [Dayjs, Dayjs] | undefined) {
-                  if (!value || !value[0]) return Promise.resolve();
-                  const estimatedRange = getFieldValue('estimatedDateRange') as [Dayjs, Dayjs] | undefined;
-                  const estimatedStart = estimatedRange?.[0];
-                  if (estimatedStart && value[0].isBefore(estimatedStart, 'day')) {
-                    return Promise.reject(new Error('实际开始时间不能早于预计开始时间'));
-                  }
-                  if (value[1] && value[0].isAfter(value[1], 'day')) {
-                    return Promise.reject(new Error('实际完成时间不能早于实际开始时间'));
-                  }
-                  return Promise.resolve();
-                },
-              }),
-            ]}
+            name="ownerId"
+            label={currentType === 'system_development' ? '指定负责人' : '指定负责人（可选）'}
           >
-            <RangePicker
-              style={{ width: '100%' }}
-              placeholder={[t('project.actualStartDate'), t('project.actualEndDate')]}
-              disabledDate={(current) => {
-                const estimatedRange = form.getFieldValue('estimatedDateRange') as [Dayjs, Dayjs] | undefined;
-                const estimatedStart = estimatedRange?.[0];
-                if (estimatedStart && current && current.isBefore(estimatedStart, 'day')) {
-                  return true;
-                }
-                return false;
-              }}
-            />
+            {currentType === 'system_development' ? (
+              <Select disabled placeholder="自动指定">
+                {projectManagers.map(pm => (
+                  <Option key={pm.id} value={pm.id}>
+                    {pm.fullName}{pm.department ? `（${pm.department}）` : ''}
+                  </Option>
+                ))}
+              </Select>
+            ) : (
+              <Select
+                allowClear
+                placeholder="请选择负责人（可选）"
+                disabled={ownerDisabled}
+              >
+                {developers.map(dev => (
+                  <Option key={dev.id} value={dev.id}>
+                    {dev.fullName}{dev.department ? `（${dev.department}）` : ''}
+                  </Option>
+                ))}
+              </Select>
+            )}
           </Form.Item>
 
           <Form.Item name="remarks" label={t('project.remarks')}>

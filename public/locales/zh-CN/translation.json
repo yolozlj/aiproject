@@ -50,7 +50,17 @@
     "forgotPassword": "忘记密码？",
     "loginSuccess": "登录成功",
     "loginFailed": "登录失败",
-    "pleaseLogin": "请先登录"
+    "pleaseLogin": "请先登录",
+    "register": "注册账号",
+    "registerTitle": "注册新账号",
+    "registerSuccess": "注册成功，请等待管理员审批后再登录",
+    "pendingApproval": "账号待审批",
+    "confirmPassword": "确认密码",
+    "passwordMismatch": "两次输入的密码不一致",
+    "usernameExists": "用户名已被占用",
+    "emailExists": "邮箱已被注册",
+    "accountInactive": "账号尚未激活，请联系管理员审批",
+    "backToLogin": "返回登录"
   },
   "project": {
     "title": "项目管理",
@@ -76,8 +86,7 @@
     "submitter": "提交人",
     "owner": "负责人",
     "participants": "参与人员",
-    "estimatedStartDate": "预计开始时间",
-    "estimatedEndDate": "预计完成时间",
+    "expectedEndDate": "期望完成时间",
     "actualStartDate": "实际开始时间",
     "actualEndDate": "实际完成时间",
     "remarks": "备注说明",
@@ -135,6 +144,7 @@
     "role_pm": "项目经理",
     "role_developer": "开发者",
     "role_user": "普通用户",
+    "role_external": "外部角色",
     "status": "状态",
     "status_active": "激活",
     "status_inactive": "停用"

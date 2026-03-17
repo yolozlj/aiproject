@@ -18,7 +18,12 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
       throw new Error('用户名或密码错误');
     }
 
-    // 3. 生成 token（这里使用简单的 base64 编码，实际应该使用 JWT）
+    // 3. 检查账号状态
+    if (user.status === 'inactive') {
+      throw new Error('账号尚未激活，请联系管理员审批');
+    }
+
+    // 4. 生成 token（这里使用简单的 base64 编码，实际应该使用 JWT）
     const token = btoa(`${user.id}:${Date.now()}`);
     const refreshToken = btoa(`${user.id}:${Date.now() + 1000}`);
 

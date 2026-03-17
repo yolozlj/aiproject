@@ -179,6 +179,7 @@ const MemberForm: React.FC = () => {
               <Option value="project_manager">{t('user.role_project_manager')}</Option>
               <Option value="developer">{t('user.role_developer')}</Option>
               <Option value="user">{t('user.role_user')}</Option>
+              <Option value="external">{t('user.role_external')}</Option>
             </Select>
           </Form.Item>
 

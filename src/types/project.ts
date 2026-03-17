@@ -28,8 +28,7 @@ export interface Project {
   participantIds: string[];            // 参与人员 ID 列表
 
   // 时间信息
-  estimatedStartDate?: Date;           // 预计开始时间
-  estimatedEndDate?: Date;             // 预计完成时间
+  expectedEndDate?: Date;              // 期望完成时间
   actualStartDate?: Date;              // 实际开始时间
   actualEndDate?: Date;                // 实际完成时间
   createdAt: Date;                     // 创建时间
@@ -59,9 +58,9 @@ export interface CreateProjectRequest {
   description: string;
   priority: Priority;
   ownerId?: string;
+  ownerName?: string;
   participantIds?: string[];
-  estimatedStartDate?: string;
-  estimatedEndDate?: string;
+  expectedEndDate?: string;
   remarks?: string;
   tags?: string[];
 }
@@ -73,9 +72,9 @@ export interface UpdateProjectRequest {
   description?: string;
   priority?: Priority;
   ownerId?: string;
+  ownerName?: string;
   participantIds?: string[];
-  estimatedStartDate?: string;
-  estimatedEndDate?: string;
+  expectedEndDate?: string;
   actualStartDate?: string;
   actualEndDate?: string;
   remarks?: string;

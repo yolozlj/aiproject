@@ -79,14 +79,9 @@ const ProjectClaimModal: React.FC<ProjectClaimModalProps> = ({
             {project.priority === 'low' && '低'}
           </Descriptions.Item>
           <Descriptions.Item label="提交人">{project.submitterName}</Descriptions.Item>
-          {project.estimatedStartDate && (
-            <Descriptions.Item label="预计开始时间">
-              {dayjs(project.estimatedStartDate).format('YYYY-MM-DD')}
-            </Descriptions.Item>
-          )}
-          {project.estimatedEndDate && (
-            <Descriptions.Item label="预计完成时间">
-              {dayjs(project.estimatedEndDate).format('YYYY-MM-DD')}
+          {project.expectedEndDate && (
+            <Descriptions.Item label="期望完成时间">
+              {dayjs(project.expectedEndDate).format('YYYY-MM-DD')}
             </Descriptions.Item>
           )}
           <Descriptions.Item label="项目描述">

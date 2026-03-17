@@ -304,12 +304,6 @@
   font-size: 14px;
 }
 
-.input-icon {
-  color: var(--color-text-tertiary, rgba(0, 0, 0, 0.45));
-  font-size: 16px;
-  margin-right: 8px;
-}
-
 [data-theme='dark'] .login-input {
   background: #141414;
   border-color: #303030;
@@ -333,9 +327,9 @@
   color: var(--color-text-tertiary, rgba(255, 255, 255, 0.45));
 }
 
-/* Password Input */
+/* Prefix/Suffix Input (affix-wrapper) */
 .login-input.ant-input-affix-wrapper {
-  padding: 0;
+  padding: 0 16px;
 }
 
 .login-input.ant-input-affix-wrapper input {
@@ -344,8 +338,10 @@
   font-size: 15px;
 }
 
-.login-input .ant-input-suffix {
-  margin-right: 12px;
+.input-icon {
+  color: var(--color-text-tertiary, rgba(0, 0, 0, 0.45));
+  font-size: 16px;
+  margin-right: 10px;
 }
 
 /* ============================================

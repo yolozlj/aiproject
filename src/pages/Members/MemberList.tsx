@@ -97,6 +97,7 @@ const MemberList: React.FC = () => {
       project_manager: 'orange',
       developer: 'blue',
       user: 'default',
+      external: 'purple',
     };
     return colors[role] || 'default';
   };
@@ -250,6 +251,7 @@ const MemberList: React.FC = () => {
             <Option value="project_manager">{t('user.role_project_manager')}</Option>
             <Option value="developer">{t('user.role_developer')}</Option>
             <Option value="user">{t('user.role_user')}</Option>
+            <Option value="external">{t('user.role_external')}</Option>
           </Select>
           <Select
             placeholder={t('user.status')}

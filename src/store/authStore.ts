@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User, Role } from '@/types';
 import * as authApi from '@/api/auth';
+import { clearExternalUserIdsCache } from '@/api/realProjectApi';
 
 interface AuthState {
   user: User | null;
@@ -34,6 +35,7 @@ export const useAuthStore = create<AuthState>()(
           localStorage.setItem('refreshToken', response.refreshToken);
           localStorage.setItem('user', JSON.stringify(response.user));
 
+          clearExternalUserIdsCache();
           set({
             user: response.user,
             token: response.token,
@@ -57,6 +59,7 @@ export const useAuthStore = create<AuthState>()(
         } catch (error) {
           console.error('Logout error:', error);
         } finally {
+          clearExternalUserIdsCache();
           // 清除本地存储
           localStorage.removeItem('token');
           localStorage.removeItem('refreshToken');
@@ -144,6 +147,11 @@ export const usePermission = () => {
         project: ['create', 'read'],
         user: ['read'],
         settings: ['read', 'update'],
+      },
+      external: {
+        project: ['create', 'read'],
+        user: [],
+        settings: ['read'],
       },
     };
 

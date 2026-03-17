@@ -198,11 +198,8 @@ const ProjectDetail: React.FC = () => {
 
       <Card title={t('project.timeInfo')} bordered={false} style={{ marginTop: 16 }}>
         <Descriptions column={2}>
-          <Descriptions.Item label={t('project.estimatedStartDate')}>
-            {project.estimatedStartDate ? dayjs(project.estimatedStartDate).format('YYYY-MM-DD') : '-'}
-          </Descriptions.Item>
-          <Descriptions.Item label={t('project.estimatedEndDate')}>
-            {project.estimatedEndDate ? dayjs(project.estimatedEndDate).format('YYYY-MM-DD') : '-'}
+          <Descriptions.Item label="期望完成时间">
+            {project.expectedEndDate ? dayjs(project.expectedEndDate).format('YYYY-MM-DD') : '-'}
           </Descriptions.Item>
           <Descriptions.Item label={t('project.actualStartDate')}>
             {project.actualStartDate ? dayjs(project.actualStartDate).format('YYYY-MM-DD') : '-'}

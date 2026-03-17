@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import MainLayout from '@/components/Layout/MainLayout';
 import Login from '@/pages/Login';
+import Register from '@/pages/Register';
 import Dashboard from '@/pages/Dashboard';
 import ProjectList from '@/pages/Projects/ProjectList';
 import ProjectDetail from '@/pages/Projects/ProjectDetail';
@@ -15,6 +16,10 @@ export const router = createBrowserRouter(
     {
       path: '/login',
       element: <Login />,
+    },
+    {
+      path: '/register',
+      element: <Register />,
     },
   {
     path: '/',

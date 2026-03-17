@@ -50,7 +50,17 @@
     "forgotPassword": "Forgot Password?",
     "loginSuccess": "Login Success",
     "loginFailed": "Login Failed",
-    "pleaseLogin": "Please Login"
+    "pleaseLogin": "Please Login",
+    "register": "Register",
+    "registerTitle": "Create New Account",
+    "registerSuccess": "Registration successful, please wait for admin approval",
+    "pendingApproval": "Account Pending Approval",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "usernameExists": "Username already taken",
+    "emailExists": "Email already registered",
+    "accountInactive": "Account not activated, please contact admin",
+    "backToLogin": "Back to Login"
   },
   "project": {
     "title": "Project Management",
@@ -76,8 +86,7 @@
     "submitter": "Submitter",
     "owner": "Owner",
     "participants": "Participants",
-    "estimatedStartDate": "Est. Start Date",
-    "estimatedEndDate": "Est. End Date",
+    "expectedEndDate": "Expected End Date",
     "actualStartDate": "Actual Start Date",
     "actualEndDate": "Actual End Date",
     "remarks": "Remarks",
@@ -135,6 +144,7 @@
     "role_pm": "Project Manager",
     "role_developer": "Developer",
     "role_user": "User",
+    "role_external": "External",
     "status": "Status",
     "status_active": "Active",
     "status_inactive": "Inactive"

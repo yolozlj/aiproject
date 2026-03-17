@@ -3,6 +3,7 @@
  * 连接到 Teable Projects 表
  */
 import projectsTableClient from './projectsTableClient';
+import { getUserList } from './user';
 import type {
   TeableResponse,
   TeableRecord,
@@ -18,6 +19,27 @@ import type { Project, PaginationParams, PaginationResponse, FilterParams, Proje
 import { mapTeableToProject, mapProjectToTeable } from '@/utils/projectMapper';
 
 const PROJECTS_TABLE_ID = import.meta.env.VITE_PROJECTS_TABLE_ID;
+
+// 外部用户 ID 缓存
+let _externalUserIdsCache: string[] | null = null;
+
+async function getExternalUserIds(): Promise<string[]> {
+  if (_externalUserIdsCache) return _externalUserIdsCache;
+  try {
+    // Teable API role 过滤不稳定，获取全量用户后前端过滤 external 角色
+    const result = await getUserList({ pageSize: 500 });
+    _externalUserIdsCache = result.data
+      .filter(u => u.role === 'external')
+      .map(u => u.id);
+  } catch {
+    _externalUserIdsCache = [];
+  }
+  return _externalUserIdsCache;
+}
+
+export function clearExternalUserIdsCache() {
+  _externalUserIdsCache = null;
+}
 
 // 值转换映射（前端英文 -> Teable 中文）
 const TYPE_TO_CN: Record<string, string> = {
@@ -195,6 +217,16 @@ export async function getProjectsFromTable(
       console.log(`🔍 按负责人筛选 (${params.owner}): ${filteredProjects.length} 个项目`);
     }
 
+    if (params.createdAtStart || params.createdAtEnd) {
+      filteredProjects = filteredProjects.filter(p => {
+        const d = new Date(p.createdAt).getTime();
+        if (params.createdAtStart && d < new Date(params.createdAtStart).getTime()) return false;
+        if (params.createdAtEnd && d > new Date(params.createdAtEnd).getTime()) return false;
+        return true;
+      });
+      console.log(`🔍 按创建时间筛选: ${filteredProjects.length} 个项目`);
+    }
+
     if (params.actualEndDateStart || params.actualEndDateEnd) {
       filteredProjects = filteredProjects.filter(p => {
         if (!p.actualEndDate) return false;
@@ -206,14 +238,20 @@ export async function getProjectsFromTable(
       console.log(`🔍 按实际完成时间筛选: ${filteredProjects.length} 个项目`);
     }
 
-    if (params.createdAtStart || params.createdAtEnd) {
-      filteredProjects = filteredProjects.filter(p => {
-        const d = new Date(p.createdAt).getTime();
-        if (params.createdAtStart && d < new Date(params.createdAtStart).getTime()) return false;
-        if (params.createdAtEnd && d > new Date(params.createdAtEnd).getTime()) return false;
-        return true;
-      });
-      console.log(`🔍 按创建时间筛选: ${filteredProjects.length} 个项目`);
+    // 角色数据隔离
+    const userStr = localStorage.getItem('user');
+    const currentUser = userStr ? JSON.parse(userStr) : null;
+    const currentRole = currentUser?.role;
+
+    if (currentRole === 'external') {
+      filteredProjects = filteredProjects.filter(p => p.submitterId === currentUser.id);
+      console.log(`🔒 外部角色隔离：只显示自己的项目，共 ${filteredProjects.length} 个`);
+    } else if (currentRole === 'project_manager' || currentRole === 'user') {
+      const externalIds = await getExternalUserIds();
+      if (externalIds.length > 0) {
+        filteredProjects = filteredProjects.filter(p => !externalIds.includes(p.submitterId));
+        console.log(`🔒 过滤外部角色项目后：${filteredProjects.length} 个`);
+      }
     }
 
     // 前端分页
@@ -260,8 +298,12 @@ export async function createProjectInTable(projectData: any): Promise<Project> {
   const userStr = localStorage.getItem('user');
   const currentUser = userStr ? JSON.parse(userStr) : null;
 
+  // 如果指定了负责人，初始状态直接设为待评审
+  const initialStatus = projectData.ownerId ? 'pending_review' : 'submitted';
+
   const teableFields = mapProjectToTeable({
     ...projectData,
+    status: initialStatus,
     submitterId: currentUser?.id || '',
     submitterName: currentUser?.fullName || currentUser?.username || '',
     createdAt: new Date(),
@@ -364,7 +406,21 @@ export async function getDashboardStatsFromTable(): Promise<ProjectStats> {
     );
 
     const records = response.data.records || [];
-    const projects = records.map((record) => mapTeableToProject(record.fields, record.id));
+    let projects = records.map((record) => mapTeableToProject(record.fields, record.id));
+
+    // 角色数据隔离
+    const userStr = localStorage.getItem('user');
+    const currentUser = userStr ? JSON.parse(userStr) : null;
+    const currentRole = currentUser?.role;
+
+    if (currentRole === 'external') {
+      projects = projects.filter(p => p.submitterId === currentUser.id);
+    } else if (currentRole === 'project_manager' || currentRole === 'user') {
+      const externalIds = await getExternalUserIds();
+      if (externalIds.length > 0) {
+        projects = projects.filter(p => !externalIds.includes(p.submitterId));
+      }
+    }
 
     // 统计各状态数量
     const submittedCount = projects.filter((p) => p.status === 'submitted').length;

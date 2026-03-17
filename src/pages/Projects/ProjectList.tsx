@@ -14,6 +14,7 @@ import './ProjectList.css';
 const { RangePicker } = DatePicker;
 type DateRange = [Dayjs | null, Dayjs | null] | null;
 
+
 const { Option } = Select;
 
 const ProjectList: React.FC = () => {
@@ -34,8 +35,8 @@ const ProjectList: React.FC = () => {
   const [priorityFilter, setPriorityFilter] = useState<Priority | undefined>();
   const [initialFilterApplied, setInitialFilterApplied] = useState(false);
   // 日期范围筛选（客户端过滤）
-  const [actualEndRange, setActualEndRange] = useState<DateRange>(null);
   const [createdAtRange, setCreatedAtRange] = useState<DateRange>(null);
+  const [actualEndRange, setActualEndRange] = useState<DateRange>(null);
   // 筛选区折叠状态
   const [filterCollapsed, setFilterCollapsed] = useState(true);
 
@@ -87,17 +88,17 @@ const ProjectList: React.FC = () => {
       if (storeFilters.type) setTypeFilter(storeFilters.type);
       if (storeFilters.status) setStatusFilter(storeFilters.status);
       if (storeFilters.priority) setPriorityFilter(storeFilters.priority);
-      if (storeFilters.actualEndDateStart || storeFilters.actualEndDateEnd) {
-        setActualEndRange([
-          storeFilters.actualEndDateStart ? dayjs(storeFilters.actualEndDateStart) : null,
-          storeFilters.actualEndDateEnd ? dayjs(storeFilters.actualEndDateEnd) : null,
-        ]);
-        setFilterCollapsed(false);
-      }
       if (storeFilters.createdAtStart || storeFilters.createdAtEnd) {
         setCreatedAtRange([
           storeFilters.createdAtStart ? dayjs(storeFilters.createdAtStart) : null,
           storeFilters.createdAtEnd ? dayjs(storeFilters.createdAtEnd) : null,
+        ]);
+        setFilterCollapsed(false);
+      }
+      if (storeFilters.actualEndDateStart || storeFilters.actualEndDateEnd) {
+        setActualEndRange([
+          storeFilters.actualEndDateStart ? dayjs(storeFilters.actualEndDateStart) : null,
+          storeFilters.actualEndDateEnd ? dayjs(storeFilters.actualEndDateEnd) : null,
         ]);
         setFilterCollapsed(false);
       }
@@ -115,10 +116,10 @@ const ProjectList: React.FC = () => {
     if (typeFilter) filters.type = typeFilter;
     if (statusFilter) filters.status = statusFilter;
     if (priorityFilter) filters.priority = priorityFilter;
-    if (actualEndRange?.[0]) filters.actualEndDateStart = actualEndRange[0].startOf('day').toISOString();
-    if (actualEndRange?.[1]) filters.actualEndDateEnd = actualEndRange[1].endOf('day').toISOString();
     if (createdAtRange?.[0]) filters.createdAtStart = createdAtRange[0].startOf('day').toISOString();
     if (createdAtRange?.[1]) filters.createdAtEnd = createdAtRange[1].endOf('day').toISOString();
+    if (actualEndRange?.[0]) filters.actualEndDateStart = actualEndRange[0].startOf('day').toISOString();
+    if (actualEndRange?.[1]) filters.actualEndDateEnd = actualEndRange[1].endOf('day').toISOString();
 
     console.log('🔍 [ProjectList] 执行筛选，参数:', filters);
     await setFilters(filters);
@@ -133,8 +134,8 @@ const ProjectList: React.FC = () => {
     setTypeFilter(undefined);
     setStatusFilter(undefined);
     setPriorityFilter(undefined);
-    setActualEndRange(null);
     setCreatedAtRange(null);
+    setActualEndRange(null);
     await setFilters({});
     console.log('✅ [ProjectList] 重置完成');
   };
@@ -327,15 +328,15 @@ const ProjectList: React.FC = () => {
         {!filterCollapsed && (
           <Space size="middle" wrap style={{ marginTop: 12 }}>
             <RangePicker
-              placeholder={['实际完成时间 起', '实际完成时间 止']}
-              value={actualEndRange}
-              onChange={(val) => setActualEndRange(val as DateRange)}
-              style={{ width: 300 }}
-            />
-            <RangePicker
               placeholder={['创建时间 起', '创建时间 止']}
               value={createdAtRange}
               onChange={(val) => setCreatedAtRange(val as DateRange)}
+              style={{ width: 280 }}
+            />
+            <RangePicker
+              placeholder={['完成时间 起', '完成时间 止']}
+              value={actualEndRange}
+              onChange={(val) => setActualEndRange(val as DateRange)}
               style={{ width: 280 }}
             />
           </Space>
