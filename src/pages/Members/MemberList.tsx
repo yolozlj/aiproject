@@ -147,7 +147,7 @@ const MemberList: React.FC = () => {
       title: t('user.phone'),
       dataIndex: 'phone',
       key: 'phone',
-      width: 120,
+      width: 100,
       render: (text: string) => text || '-',
     },
     {
