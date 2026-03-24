@@ -171,7 +171,9 @@ export async function getProjectsFromTable(
     );
 
     const records = response.data.records || [];
-    let projects = records.map((record) => mapTeableToProject(record.fields, record.id));
+    let projects = records
+      .map((record) => mapTeableToProject(record.fields, record.id))
+      .filter((p) => !!p.name);
 
     console.log(`📥 从 Teable 获取到 ${projects.length} 个项目`);
 
