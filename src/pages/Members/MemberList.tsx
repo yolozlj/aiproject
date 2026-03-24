@@ -111,25 +111,25 @@ const MemberList: React.FC = () => {
       title: t('user.username'),
       dataIndex: 'username',
       key: 'username',
-      width: 120,
+      width: 100,
     },
     {
       title: t('user.fullName'),
       dataIndex: 'fullName',
       key: 'fullName',
-      width: 120,
+      width: 80,
     },
     {
       title: t('user.email'),
       dataIndex: 'email',
       key: 'email',
-      width: 200,
+      width: 180,
     },
     {
       title: t('user.role'),
       dataIndex: 'role',
       key: 'role',
-      width: 120,
+      width: 100,
       render: (role: Role) => (
         <Tag color={getRoleColor(role)}>
           {t(`user.role_${role}`)}
@@ -147,14 +147,14 @@ const MemberList: React.FC = () => {
       title: t('user.phone'),
       dataIndex: 'phone',
       key: 'phone',
-      width: 130,
+      width: 120,
       render: (text: string) => text || '-',
     },
     {
       title: t('user.status'),
       dataIndex: 'status',
       key: 'status',
-      width: 100,
+      width: 75,
       render: (status: 'active' | 'inactive') => (
         <Tag color={getStatusColor(status)}>
           {t(`user.status_${status}`)}
@@ -165,14 +165,14 @@ const MemberList: React.FC = () => {
       title: t('common.createdAt'),
       dataIndex: 'createdAt',
       key: 'createdAt',
-      width: 120,
+      width: 100,
       render: (date: Date) => dayjs(date).format('YYYY-MM-DD'),
     },
     {
       title: t('common.actions'),
       key: 'actions',
       fixed: 'right' as const,
-      width: 150,
+      width: 120,
       render: (_: any, record: User) => (
         <Space size="small">
           {hasPermission('user', 'update') && (
@@ -276,7 +276,7 @@ const MemberList: React.FC = () => {
           dataSource={users}
           loading={loading}
           rowKey="id"
-          scroll={{ x: 1200 }}
+          scroll={{ x: 900 }}
           pagination={{
             current: page,
             pageSize,
