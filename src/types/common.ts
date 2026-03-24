@@ -54,4 +54,5 @@ export interface FilterParams {
   actualEndDateEnd?: string;   // 实际完成时间范围止
   sortBy?: string; // 排序字段
   sortOrder?: 'asc' | 'desc'; // 排序方向
+  myProjects?: boolean; // 我的项目：提交人或负责人是当前用户
 }

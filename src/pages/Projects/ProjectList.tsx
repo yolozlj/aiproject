@@ -26,7 +26,7 @@ const ProjectList: React.FC = () => {
   const store = useProjectStore();
   const { projects, total, page, pageSize, loading, fetchProjects, setFilters } = store;
 
-  const { canCreate } = usePermission();
+  const { canCreate, user } = usePermission();
   const [searchText, setSearchText] = useState('');
   const [submitterFilter, setSubmitterFilter] = useState('');
   const [ownerFilter, setOwnerFilter] = useState('');
@@ -39,6 +39,8 @@ const ProjectList: React.FC = () => {
   const [actualEndRange, setActualEndRange] = useState<DateRange>(null);
   // 筛选区折叠状态
   const [filterCollapsed, setFilterCollapsed] = useState(true);
+  // 我的项目筛选激活状态
+  const [myProjectsActive, setMyProjectsActive] = useState(false);
 
   const tableData = useMemo(() => projects.map(p => ({ ...p })), [projects]);
 
@@ -109,6 +111,7 @@ const ProjectList: React.FC = () => {
   }, []);
 
   const handleSearch = async () => {
+    setMyProjectsActive(false);
     const filters: any = {};
     if (searchText) filters.keyword = searchText;
     if (submitterFilter) filters.submitter = submitterFilter;
@@ -126,6 +129,25 @@ const ProjectList: React.FC = () => {
     console.log('✅ [ProjectList] setFilters 完成');
   };
 
+  const handleMyProjects = async () => {
+    const next = !myProjectsActive;
+    setMyProjectsActive(next);
+    if (next) {
+      // 激活时重置其他筛选，只保留我的项目
+      setSearchText('');
+      setSubmitterFilter('');
+      setOwnerFilter('');
+      setTypeFilter(undefined);
+      setStatusFilter(undefined);
+      setPriorityFilter(undefined);
+      setCreatedAtRange(null);
+      setActualEndRange(null);
+      await setFilters({ myProjects: true });
+    } else {
+      await setFilters({});
+    }
+  };
+
   const handleReset = async () => {
     console.log('🔄 [ProjectList] 重置筛选');
     setSearchText('');
@@ -136,6 +158,7 @@ const ProjectList: React.FC = () => {
     setPriorityFilter(undefined);
     setCreatedAtRange(null);
     setActualEndRange(null);
+    setMyProjectsActive(false);
     await setFilters({});
     console.log('✅ [ProjectList] 重置完成');
   };
@@ -169,6 +192,8 @@ const ProjectList: React.FC = () => {
       title: t('project.name'),
       dataIndex: 'name',
       key: 'name',
+      width: 280,
+      ellipsis: true,
       render: (text: string, record: Project) => (
         <a onClick={() => navigate(`/projects/${record.id}`)}>{text}</a>
       ),
@@ -177,12 +202,14 @@ const ProjectList: React.FC = () => {
       title: t('project.type'),
       dataIndex: 'type',
       key: 'type',
+      width: 110,
       render: (type: ProjectType) => t(`project.type_${type}`),
     },
     {
       title: t('project.priority'),
       dataIndex: 'priority',
       key: 'priority',
+      width: 70,
       render: (priority: Priority) => (
         <Tag color={getPriorityColor(priority)}>
           {t(`project.priority_${priority}`)}
@@ -193,6 +220,7 @@ const ProjectList: React.FC = () => {
       title: t('project.status'),
       dataIndex: 'status',
       key: 'status',
+      width: 80,
       render: (status: ProjectStatus) => (
         <Tag color={getStatusColor(status)}>
           {t(`project.status_${status}`)}
@@ -203,24 +231,28 @@ const ProjectList: React.FC = () => {
       title: t('project.submitter'),
       dataIndex: 'submitterName',
       key: 'submitterName',
+      width: 80,
       render: (text: string) => text || '-',
     },
     {
       title: t('project.owner'),
       dataIndex: 'ownerName',
       key: 'ownerName',
+      width: 80,
       render: (text: string) => text || '-',
     },
     {
       title: t('project.createdAt'),
       dataIndex: 'createdAt',
       key: 'createdAt',
+      width: 100,
       render: (date: Date) => dayjs(date).format('YYYY-MM-DD'),
     },
     {
       title: t('project.actualEndDate'),
       dataIndex: 'actualEndDate',
       key: 'actualEndDate',
+      width: 100,
       render: (date: Date | undefined) => date ? dayjs(date).format('YYYY-MM-DD') : '-',
     },
     {
@@ -238,15 +270,24 @@ const ProjectList: React.FC = () => {
     <div className="project-list">
       <div className="page-header">
         <h1 className="page-title">{t('project.title')}</h1>
-        {canCreate('project') && (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate('/projects/new')}
-          >
-            {t('project.createProject')}
-          </Button>
-        )}
+        <Space>
+          {user && (
+            <Button
+              onClick={handleMyProjects}
+              style={myProjectsActive ? { background: '#d9d9d9', borderColor: '#d9d9d9', color: 'rgba(0,0,0,0.45)' } : {}}
+            >
+              我的项目
+            </Button>
+          )}
+          {canCreate('project') && (
+            <Button
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/projects/new')}
+            >
+              {t('project.createProject')}
+            </Button>
+          )}
+        </Space>
       </div>
 
       <Card bordered={false} className="filter-card">
@@ -350,6 +391,7 @@ const ProjectList: React.FC = () => {
           dataSource={tableData}
           loading={loading}
           rowKey="id"
+          scroll={{ x: 1000 }}
           pagination={{
             current: page,
             pageSize,

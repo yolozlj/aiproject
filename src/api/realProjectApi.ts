@@ -201,6 +201,19 @@ export async function getProjectsFromTable(
       console.log(`🔍 按关键词筛选 (${searchKeyword}): ${filteredProjects.length} 个项目`);
     }
 
+    if (params.myProjects) {
+      const userStr = localStorage.getItem('user');
+      const me = userStr ? JSON.parse(userStr) : null;
+      const myName = me?.fullName?.toLowerCase() || '';
+      if (myName) {
+        filteredProjects = filteredProjects.filter(p =>
+          (p.submitterName && p.submitterName.toLowerCase().includes(myName)) ||
+          (p.ownerName && p.ownerName.toLowerCase().includes(myName))
+        );
+        console.log(`🔍 我的项目筛选 (${me?.fullName}): ${filteredProjects.length} 个项目`);
+      }
+    }
+
     if (params.submitter) {
       const kw = params.submitter.toLowerCase();
       filteredProjects = filteredProjects.filter(p =>
