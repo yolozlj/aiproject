@@ -135,7 +135,7 @@
   background: var(--color-bg) !important;
 }
 
-.member-list .ant-table-tbody > tr > td {
+.member-list .ant-table-tbody > tr.ant-table-row > td {
   border-bottom: 1px solid var(--color-border-light) !important;
   padding: var(--spacing-sm) !important;
   color: var(--color-text-primary);
