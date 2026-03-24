@@ -173,7 +173,7 @@ export async function getProjectsFromTable(
     const records = response.data.records || [];
     let projects = records
       .map((record) => mapTeableToProject(record.fields, record.id))
-      .filter((p) => !!p.name);
+      .filter((p) => !!(p.name && p.name.trim()));
 
     console.log(`📥 从 Teable 获取到 ${projects.length} 个项目`);
 
@@ -424,7 +424,9 @@ export async function getDashboardStatsFromTable(): Promise<ProjectStats> {
     );
 
     const records = response.data.records || [];
-    let projects = records.map((record) => mapTeableToProject(record.fields, record.id));
+    let projects = records
+      .map((record) => mapTeableToProject(record.fields, record.id))
+      .filter((p) => !!(p.name && p.name.trim()));
 
     // 角色数据隔离
     const userStr = localStorage.getItem('user');
