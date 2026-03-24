@@ -140,7 +140,7 @@ const MemberList: React.FC = () => {
       title: t('user.department'),
       dataIndex: 'department',
       key: 'department',
-      width: 120,
+      width: 100,
       render: (text: string) => text || '-',
     },
     {
