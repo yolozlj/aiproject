@@ -177,7 +177,11 @@ const ProjectDetail: React.FC = () => {
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label={t('project.description')} span={2}>
-            {project.description}
+            {project.description?.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+              /^https?:\/\//.test(part)
+                ? <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
+                : part
+            )}
           </Descriptions.Item>
         </Descriptions>
       </Card>
