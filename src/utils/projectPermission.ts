@@ -116,12 +116,17 @@ export const canChangeStatus = (
  * 判断用户是否可以删除项目
  */
 export const canDeleteProject = (project: Project, user: User): boolean => {
-  // 只有管理员可以删除项目
-  if (user.role !== 'admin') {
-    return false;
+  // 管理员可以删除所有项目
+  if (user.role === 'admin') {
+    return true;
   }
 
-  return true;
+  // 提交人可以删除自己提交的项目
+  if (project.submitterId === user.id) {
+    return true;
+  }
+
+  return false;
 };
 
 /**

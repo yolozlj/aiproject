@@ -41,6 +41,8 @@ const ProjectList: React.FC = () => {
   const [filterCollapsed, setFilterCollapsed] = useState(true);
   // 我的项目筛选激活状态
   const [myProjectsActive, setMyProjectsActive] = useState(false);
+  // 我的待办筛选激活状态
+  const [myTodoActive, setMyTodoActive] = useState(false);
 
   const tableData = useMemo(() => projects.map(p => ({ ...p })), [projects]);
 
@@ -112,6 +114,7 @@ const ProjectList: React.FC = () => {
 
   const handleSearch = async () => {
     setMyProjectsActive(false);
+    setMyTodoActive(false);
     const filters: any = {};
     if (searchText) filters.keyword = searchText;
     if (submitterFilter) filters.submitter = submitterFilter;
@@ -132,6 +135,7 @@ const ProjectList: React.FC = () => {
   const handleMyProjects = async () => {
     const next = !myProjectsActive;
     setMyProjectsActive(next);
+    setMyTodoActive(false); // 互斥
     if (next) {
       // 激活时重置其他筛选，只保留我的项目
       setSearchText('');
@@ -148,6 +152,25 @@ const ProjectList: React.FC = () => {
     }
   };
 
+  const handleMyTodo = async () => {
+    const next = !myTodoActive;
+    setMyTodoActive(next);
+    setMyProjectsActive(false); // 互斥
+    if (next) {
+      setSearchText('');
+      setSubmitterFilter('');
+      setOwnerFilter('');
+      setTypeFilter(undefined);
+      setStatusFilter(undefined);
+      setPriorityFilter(undefined);
+      setCreatedAtRange(null);
+      setActualEndRange(null);
+      await setFilters({ myTodo: true });
+    } else {
+      await setFilters({});
+    }
+  };
+
   const handleReset = async () => {
     console.log('🔄 [ProjectList] 重置筛选');
     setSearchText('');
@@ -159,6 +182,7 @@ const ProjectList: React.FC = () => {
     setCreatedAtRange(null);
     setActualEndRange(null);
     setMyProjectsActive(false);
+    setMyTodoActive(false);
     await setFilters({});
     console.log('✅ [ProjectList] 重置完成');
   };
@@ -277,6 +301,14 @@ const ProjectList: React.FC = () => {
               style={myProjectsActive ? { background: '#d9d9d9', borderColor: '#d9d9d9', color: 'rgba(0,0,0,0.45)' } : {}}
             >
               我的项目
+            </Button>
+          )}
+          {user && (
+            <Button
+              onClick={handleMyTodo}
+              style={myTodoActive ? { background: '#d9d9d9', borderColor: '#d9d9d9', color: 'rgba(0,0,0,0.45)' } : {}}
+            >
+              我的待办
             </Button>
           )}
           {canCreate('project') && (

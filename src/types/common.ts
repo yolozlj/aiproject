@@ -55,4 +55,5 @@ export interface FilterParams {
   sortBy?: string; // 排序字段
   sortOrder?: 'asc' | 'desc'; // 排序方向
   myProjects?: boolean; // 我的项目：提交人或负责人是当前用户
+  myTodo?: boolean; // 我的待办：负责人是当前用户且状态为非完成
 }

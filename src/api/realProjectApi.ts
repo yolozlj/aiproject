@@ -216,6 +216,19 @@ export async function getProjectsFromTable(
       }
     }
 
+    if (params.myTodo) {
+      const userStr = localStorage.getItem('user');
+      const me = userStr ? JSON.parse(userStr) : null;
+      const myId = me?.id || '';
+      if (myId) {
+        const todoStatuses = ['submitted', 'in_progress', 'pending_review'];
+        filteredProjects = filteredProjects.filter(p =>
+          p.ownerId === myId && todoStatuses.includes(p.status)
+        );
+        console.log(`🔍 我的待办筛选 (${me?.fullName}): ${filteredProjects.length} 个项目`);
+      }
+    }
+
     if (params.submitter) {
       const kw = params.submitter.toLowerCase();
       filteredProjects = filteredProjects.filter(p =>

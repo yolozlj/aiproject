@@ -12,7 +12,7 @@ import ProjectClaimModal from '@/components/Project/ProjectClaimModal';
 import ProjectAssignModal from '@/components/Project/ProjectAssignModal';
 import ProjectAttachmentManager from '@/components/Project/ProjectAttachmentManager';
 import ProjectHistoryTimeline from '@/components/Project/ProjectHistoryTimeline';
-import { canClaimProject, canAssignProject } from '@/utils/projectPermission';
+import { canClaimProject, canAssignProject, canDeleteProject } from '@/utils/projectPermission';
 import dayjs from 'dayjs';
 import './ProjectDetail.css';
 
@@ -22,7 +22,7 @@ const ProjectDetail: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuthStore();
-  const { canUpdate, canDelete } = usePermission();
+  const { canUpdate } = usePermission();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [claimModalVisible, setClaimModalVisible] = useState(false);
@@ -143,7 +143,7 @@ const ProjectDetail: React.FC = () => {
               {t('common.edit')}
             </Button>
           )}
-          {canDelete('project') && (
+          {project && user && canDeleteProject(project, user) && (
             <Button
               danger
               icon={<DeleteOutlined />}
