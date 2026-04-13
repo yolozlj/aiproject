@@ -354,5 +354,25 @@ export async function getUserByWorkcode(workcode: string): Promise<User | null> 
   }
 }
 
+/**
+ * 通过邮箱精确更新工号（使用 Teable 真实 record ID，绕过自定义 id 字段歧义）
+ */
+export async function updateUserWorkcodeByEmail(email: string, workcode: string): Promise<void> {
+  const response = await teableClient.get<TeableResponse<TeableUserFields>>(
+    `/table/${USERS_TABLE_ID}/record`,
+    { params: { fieldKeyType: 'name', take: 100 } }
+  );
+
+  const matchedRecord = (response.data.records || []).find(
+    r => r.fields && r.fields.email === email
+  );
+  if (!matchedRecord) return;
+
+  await teableClient.patch(
+    `/table/${USERS_TABLE_ID}/record/${matchedRecord.id}`, // matchedRecord.id 是 Teable 真实 rec_xxx
+    { fieldKeyType: 'name', record: { fields: { workcode } } }
+  );
+}
+
 // 兼容旧的导出方式
 export const getUsers = getUserList;

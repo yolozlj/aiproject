@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { User, Role } from '@/types';
 import * as authApi from '@/api/auth';
 import type { SSOUser } from '@/api/auth';
-import { getUserByEmail, getUserByWorkcode, updateUser } from '@/api/user';
+import { getUserByEmail, getUserByWorkcode, updateUserWorkcodeByEmail } from '@/api/user';
 import { clearExternalUserIdsCache } from '@/api/realProjectApi';
 
 interface AuthState {
@@ -44,9 +44,9 @@ export const useAuthStore = create<AuthState>()(
           let user = await getUserByWorkcode(ssoUser.workcode);
           if (!user) {
             user = await getUserByEmail(ssoUser.email);
-            // 邮箱降级匹配成功，自动补全工号
+            // 邮箱降级匹配成功，自动补全工号（使用专用函数确保用真实 record ID 更新）
             if (user && ssoUser.workcode) {
-              updateUser(user.id, { workcode: ssoUser.workcode }).catch(() => {});
+              updateUserWorkcodeByEmail(ssoUser.email, ssoUser.workcode).catch(console.error);
               user = { ...user, workcode: ssoUser.workcode };
             }
           }
