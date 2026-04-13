@@ -17,9 +17,8 @@ export function mapTeableToUser(teableFields: TeableUserFields, recordId: string
     fullName: teableFields.full_name,
     avatar: teableFields.avatar,
     role: teableFields.role as any,  // 需要确保角色值符合 Role 枚举
-    department: teableFields.department,
-    phone: teableFields.phone,
     status: teableFields.status as any,  // 需要确保状态值符合 UserStatus 枚举
+    workcode: teableFields.workcode,
     createdAt: teableFields.created_at ? new Date(teableFields.created_at) : new Date(),
     updatedAt: teableFields.updated_at ? new Date(teableFields.updated_at) : new Date(),
   };
@@ -38,9 +37,8 @@ export function mapUserToTeable(user: Partial<User>): Partial<TeableUserFields> 
   if (user.fullName !== undefined) teableFields.full_name = user.fullName;
   if (user.avatar !== undefined) teableFields.avatar = user.avatar;
   if (user.role !== undefined) teableFields.role = user.role;
-  if (user.department !== undefined) teableFields.department = user.department;
-  if (user.phone !== undefined) teableFields.phone = user.phone;
   if (user.status !== undefined) teableFields.status = user.status;
+  if (user.workcode !== undefined) teableFields.workcode = user.workcode;
   if (user.createdAt !== undefined) teableFields.created_at = user.createdAt.toISOString();
   if (user.updatedAt !== undefined) teableFields.updated_at = user.updatedAt.toISOString();
 

@@ -1,50 +1,72 @@
 import { useState } from 'react';
-import { Card, Form, Input, Button, message } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, TeamOutlined, IdcardOutlined } from '@ant-design/icons';
-import { useNavigate, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { createUser } from '@/api/user';
-import { getUserByUsername, getUserByEmail } from '@/api/user';
+import { Card, Form, Input, Button, Select, message, Descriptions, Alert } from 'antd';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { createUser, getUserByEmail } from '@/api/user';
+import type { SSOUser } from '@/api/auth';
+
+const { Option } = Select;
+const { TextArea } = Input;
 
 const Register: React.FC = () => {
-  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const [form] = Form.useForm();
+
+  // 从路由 state 中获取 SSO 用户信息
+  const ssoUser = (location.state as { ssoUser?: SSOUser })?.ssoUser;
+
+  // 未经 SSO 验证直接访问此页面，重定向到登录
+  if (!ssoUser) {
+    return (
+      <div className="login-container">
+        <div className="login-background">
+          <div className="login-bg-circle circle-1"></div>
+          <div className="login-bg-circle circle-2"></div>
+          <div className="login-bg-circle circle-3"></div>
+        </div>
+        <Card className="login-card" bordered={false}>
+          <Alert
+            type="warning"
+            message="请先通过公司账号登录"
+            description="访问权限申请需要先完成 SSO 身份验证。"
+            showIcon
+            style={{ marginBottom: 24 }}
+          />
+          <Link to="/login">
+            <Button type="primary" block>返回登录</Button>
+          </Link>
+        </Card>
+      </div>
+    );
+  }
 
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // 检查用户名唯一性
-      const existingUser = await getUserByUsername(values.username);
-      if (existingUser) {
-        form.setFields([{ name: 'username', errors: [t('auth.usernameExists')] }]);
+      // 检查是否已有申请（避免重复提交）
+      const existing = await getUserByEmail(ssoUser.email);
+      if (existing) {
+        message.warning('您已有访问申请记录，请等待管理员审批或联系管理员处理。');
+        navigate('/login');
         return;
       }
 
-      // 检查邮箱唯一性
-      const existingEmail = await getUserByEmail(values.email);
-      if (existingEmail) {
-        form.setFields([{ name: 'email', errors: [t('auth.emailExists')] }]);
-        return;
-      }
-
-      // 创建外部角色用户，状态为 inactive（待审批）
+      // 创建待审批用户记录
+      const username = ssoUser.account || ssoUser.workcode || ssoUser.email.split('@')[0];
       await createUser({
-        username: values.username,
-        password: values.password,
-        fullName: values.fullName,
-        email: values.email,
-        phone: values.phone,
-        department: values.department,
-        role: 'external',
+        username,
+        fullName: ssoUser.name,
+        email: ssoUser.email,
+        workcode: ssoUser.workcode,
+        role: values.role,
         status: 'inactive',
       });
 
-      message.success(t('auth.registerSuccess'));
+      message.success('申请已提交，请等待管理员审批后再登录。');
       navigate('/login');
     } catch (error: any) {
-      message.error(error.message || '注册失败，请稍后重试');
+      message.error(error.message || '提交申请失败，请稍后重试');
     } finally {
       setLoading(false);
     }
@@ -59,7 +81,7 @@ const Register: React.FC = () => {
         <div className="login-bg-circle circle-3"></div>
       </div>
 
-      {/* 注册卡片 */}
+      {/* 申请卡片 */}
       <Card className="login-card" bordered={false} style={{ maxWidth: 520 }}>
         <div className="login-header">
           <div className="login-logo">
@@ -68,113 +90,60 @@ const Register: React.FC = () => {
               <path d="M 16 24 L 22 30 L 32 18" className="logo-check" />
             </svg>
           </div>
-          <h1 className="login-title" style={{ fontSize: 28 }}>{t('auth.registerTitle')}</h1>
-          <p className="login-subtitle">Project Management System</p>
+          <h1 className="login-title" style={{ fontSize: 26 }}>申请访问权限</h1>
+          <p className="login-subtitle">Access Permission Request</p>
         </div>
+
+        {/* SSO 身份信息（只读展示） */}
+        <Descriptions
+          bordered
+          size="small"
+          column={1}
+          style={{ marginBottom: 24 }}
+          title={<span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>已验证的公司身份</span>}
+        >
+          <Descriptions.Item label="姓名">{ssoUser.name}</Descriptions.Item>
+          <Descriptions.Item label="邮箱">{ssoUser.email}</Descriptions.Item>
+          {ssoUser.workcode && (
+            <Descriptions.Item label="工号">{ssoUser.workcode}</Descriptions.Item>
+          )}
+          {ssoUser.account && (
+            <Descriptions.Item label="账号">{ssoUser.account}</Descriptions.Item>
+          )}
+        </Descriptions>
 
         <Form
           form={form}
-          name="register"
+          name="access-request"
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical"
           className="login-form"
         >
           <Form.Item
-            name="username"
-            label={t('user.username')}
-            rules={[
-              { required: true, message: '请输入用户名' },
-              { min: 3, message: '用户名至少3个字符' },
-              { max: 50, message: '用户名最多50个字符' },
-              { pattern: /^[a-zA-Z0-9_]+$/, message: '用户名只能包含字母、数字和下划线' },
-            ]}
+            name="role"
+            label="申请角色"
+            rules={[{ required: true, message: '请选择申请的角色' }]}
+            initialValue="external"
           >
-            <Input
-              prefix={<UserOutlined className="input-icon" />}
-              placeholder="请输入用户名"
-              className="login-input"
-            />
+            <Select placeholder="请选择申请的角色">
+              <Option value="project_manager">项目经理</Option>
+              <Option value="developer">开发人员</Option>
+              <Option value="user">普通用户</Option>
+              <Option value="external">外部用户</Option>
+            </Select>
           </Form.Item>
 
           <Form.Item
-            name="password"
-            label={t('user.password')}
-            rules={[
-              { required: true, message: '请输入密码' },
-              { min: 6, message: '密码至少6个字符' },
-            ]}
+            name="reason"
+            label="申请理由"
+            rules={[{ required: true, message: '请填写申请理由' }]}
           >
-            <Input.Password
-              prefix={<LockOutlined className="input-icon" />}
-              placeholder="请输入密码"
-              className="login-input"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="confirmPassword"
-            label={t('auth.confirmPassword')}
-            dependencies={['password']}
-            rules={[
-              { required: true, message: '请确认密码' },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error(t('auth.passwordMismatch')));
-                },
-              }),
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined className="input-icon" />}
-              placeholder="请再次输入密码"
-              className="login-input"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="fullName"
-            label={t('user.fullName')}
-            rules={[{ required: true, message: '请输入姓名' }]}
-          >
-            <Input
-              prefix={<IdcardOutlined className="input-icon" />}
-              placeholder="请输入姓名"
-              className="login-input"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="email"
-            label={t('user.email')}
-            rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' },
-            ]}
-          >
-            <Input
-              prefix={<MailOutlined className="input-icon" />}
-              placeholder="请输入邮箱"
-              className="login-input"
-            />
-          </Form.Item>
-
-          <Form.Item name="phone" label={t('user.phone')}>
-            <Input
-              prefix={<PhoneOutlined className="input-icon" />}
-              placeholder="请输入手机号码（可选）"
-              className="login-input"
-            />
-          </Form.Item>
-
-          <Form.Item name="department" label={t('user.department')}>
-            <Input
-              prefix={<TeamOutlined className="input-icon" />}
-              placeholder="请输入部门（可选）"
-              className="login-input"
+            <TextArea
+              placeholder="请说明申请访问此系统的原因及使用场景…"
+              rows={3}
+              maxLength={500}
+              showCount
             />
           </Form.Item>
 
@@ -186,14 +155,14 @@ const Register: React.FC = () => {
               block
               className="login-button"
             >
-              {loading ? '提交中...' : t('auth.register')}
+              {loading ? '提交中…' : '提交申请'}
             </Button>
           </Form.Item>
         </Form>
 
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <Link to="/login" style={{ color: 'var(--color-accent, #64748b)', fontSize: 14 }}>
-            {t('auth.backToLogin')}
+        <div style={{ textAlign: 'center', marginTop: 8 }}>
+          <Link to="/login" style={{ color: 'var(--color-accent, #64748b)', fontSize: 13 }}>
+            返回登录
           </Link>
         </div>
       </Card>

@@ -1,102 +1,104 @@
-import { useState } from 'react';
-import { Card, Form, Input, Button, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { useAuthStore } from '@/store';
-import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import { Spin, Alert } from 'antd';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuthStore, AccountNotRegisteredError } from '@/store/authStore';
 import './Login.css';
 
+const SSO_APP_ID = import.meta.env.VITE_SSO_APP_ID as string;
+const SSO_LOGIN_URL = `https://sso.100tal.com/portal/login/${SSO_APP_ID}`;
+
 const Login: React.FC = () => {
-  const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [pendingMsg, setPendingMsg] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuthStore();
+  const { isAuthenticated, loginWithSSO } = useAuthStore();
 
   const from = (location.state as any)?.from?.pathname || '/dashboard';
 
-  const onFinish = async (values: { username: string; password: string }) => {
-    setLoading(true);
-    try {
-      await login(values.username, values.password);
-      message.success(t('auth.loginSuccess'));
-      navigate(from, { replace: true });
-    } catch (error: any) {
-      message.error(error.message || t('auth.loginFailed'));
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ssoToken = params.get('token');
 
+    // 情况1：已登录，直接进入系统
+    if (isAuthenticated && !ssoToken) {
+      navigate(from, { replace: true });
+      return;
+    }
+
+    // 情况2：SSO 回调，处理 token
+    if (ssoToken) {
+      history.replaceState({}, '', window.location.pathname);
+
+      loginWithSSO(ssoToken)
+        .then(() => {
+          navigate(from, { replace: true });
+        })
+        .catch((error: Error) => {
+          if (error instanceof AccountNotRegisteredError) {
+            navigate('/register', {
+              replace: true,
+              state: { ssoUser: error.ssoUser },
+            });
+          } else if (error.message === 'account_pending_approval') {
+            setPendingMsg('您的访问申请正在审核中，请联系系统管理员处理。');
+          } else {
+            setErrorMsg(error.message || 'SSO 验证失败，请刷新页面重试。');
+          }
+        });
+      return;
+    }
+
+    // 情况3：未登录且无 token，立即跳转 SSO
+    window.location.href = SSO_LOGIN_URL;
+  }, []);
+
+  // 正常情况下页面内容一闪而过（直接跳转），
+  // 只有审核中/错误时才真正展示给用户看。
   return (
     <div className="login-container">
-      {/* 背景装饰 */}
       <div className="login-background">
         <div className="login-bg-circle circle-1"></div>
         <div className="login-bg-circle circle-2"></div>
         <div className="login-bg-circle circle-3"></div>
       </div>
 
-      {/* 登录卡片 */}
-      <Card className="login-card" bordered={false}>
-        <div className="login-header">
-          <div className="login-logo">
-            <svg viewBox="0 0 48 48" className="logo-icon">
-              <rect x="8" y="8" width="32" height="32" rx="4" className="logo-rect" />
-              <path d="M 16 24 L 22 30 L 32 18" className="logo-check" />
-            </svg>
-          </div>
-          <h1 className="login-title">项目管理系统</h1>
-          <p className="login-subtitle">Project Management System</p>
+      <div className="login-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24, padding: 40, background: 'var(--color-bg-card, #fff)', borderRadius: 16, boxShadow: '0 4px 32px rgba(0,0,0,0.08)' }}>
+        <div className="login-logo">
+          <svg viewBox="0 0 48 48" className="logo-icon">
+            <rect x="8" y="8" width="32" height="32" rx="4" className="logo-rect" />
+            <path d="M 16 24 L 22 30 L 32 18" className="logo-check" />
+          </svg>
         </div>
+        <h1 className="login-title" style={{ margin: 0 }}>项目管理系统</h1>
 
-        <Form
-          name="login"
-          onFinish={onFinish}
-          autoComplete="off"
-          className="login-form"
-        >
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: t('auth.username') + '不能为空' }]}
-          >
-            <Input
-              prefix={<UserOutlined className="input-icon" />}
-              placeholder={t('auth.username')}
-              className="login-input"
-            />
-          </Form.Item>
+        {!errorMsg && !pendingMsg && (
+          <>
+            <Spin size="large" />
+            <p style={{ color: 'var(--color-text-secondary)', margin: 0 }}>正在跳转登录…</p>
+          </>
+        )}
 
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: t('auth.password') + '不能为空' }]}
-          >
-            <Input.Password
-              prefix={<LockOutlined className="input-icon" />}
-              placeholder={t('auth.password')}
-              className="login-input"
-            />
-          </Form.Item>
+        {pendingMsg && (
+          <Alert
+            type="warning"
+            message="申请审核中"
+            description={pendingMsg}
+            showIcon
+            style={{ width: '100%' }}
+          />
+        )}
 
-          <Form.Item className="login-button-wrapper">
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              className="login-button"
-            >
-              {loading ? '登录中...' : t('auth.login')}
-            </Button>
-          </Form.Item>
-        </Form>
-
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <Link to="/register" style={{ color: 'var(--color-accent, #64748b)', fontSize: 14 }}>
-            {t('auth.register')}
-          </Link>
-        </div>
-      </Card>
+        {errorMsg && (
+          <Alert
+            type="error"
+            message="登录失败"
+            description={errorMsg}
+            showIcon
+            style={{ width: '100%' }}
+          />
+        )}
+      </div>
     </div>
   );
 };

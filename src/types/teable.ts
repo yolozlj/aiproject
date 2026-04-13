@@ -88,9 +88,8 @@ export interface TeableUserFields {
   full_name: string;             // fldUA8av97AJkHJbxoP
   avatar?: string;               // fldC62x7bVyrxYjrSho
   role: string;                  // fldj0oyuLlNC6Y3rWSt
-  department?: string;           // fldpkwZB6oJYsnQHqQC
-  phone?: string;                // fldkFP6qOoWrF7Y004C
   status: string;                // fldYFy7uHBqE2lazWyZ
+  workcode?: string;             // fldEB3acTAcC2MjrsSQ SSO 工号
   created_at?: string;           // fldKA7Yihd0FuT1i1tK (ISO 8601)
   updated_at?: string;           // fldmDLbZ6uPFlUaP1SG (ISO 8601)
 }
@@ -104,9 +103,8 @@ export const USER_FIELD_IDS = {
   full_name: 'fldUA8av97AJkHJbxoP',
   avatar: 'fldC62x7bVyrxYjrSho',
   role: 'fldj0oyuLlNC6Y3rWSt',
-  department: 'fldpkwZB6oJYsnQHqQC',
-  phone: 'fldkFP6qOoWrF7Y004C',
   status: 'fldYFy7uHBqE2lazWyZ',
+  workcode: 'fldEB3acTAcC2MjrsSQ',
   created_at: 'fldKA7Yihd0FuT1i1tK',
   updated_at: 'fldmDLbZ6uPFlUaP1SG',
 } as const;

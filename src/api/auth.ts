@@ -1,52 +1,44 @@
-import client from './client';
-import type { LoginRequest, LoginResponse, User, ApiResponse } from '@/types';
-import { getUserByUsername } from './user';
+import type { User } from '@/types';
 
-// 登录
-export const login = async (data: LoginRequest): Promise<LoginResponse> => {
-  // 使用真实的 Teable API 进行登录验证
-  try {
-    // 1. 根据用户名查找用户
-    const user = await getUserByUsername(data.username);
+const FC_BASE_URL = import.meta.env.VITE_FC_BASE_URL as string;
 
-    if (!user) {
-      throw new Error('用户名或密码错误');
-    }
+// SSO 回调验证结果
+export interface SSOUser {
+  account_id: string;
+  account: string;    // 账号名（如 zhoulijie1），适合作为 username
+  name: string;       // 真实姓名
+  workcode: string;   // 工号
+  email: string;      // 企业邮箱
+  yachid: string;     // 知音楼 ID
+}
 
-    // 2. 验证密码（注意：这里是简化版本，实际应该使用加密密码比对）
-    if (user.password !== data.password) {
-      throw new Error('用户名或密码错误');
-    }
+export interface SSOCallbackResult {
+  jwtToken: string;
+  ssoUser: SSOUser;
+}
 
-    // 3. 检查账号状态
-    if (user.status === 'inactive') {
-      throw new Error('账号尚未激活，请联系管理员审批');
-    }
+// 调用 FC 后端验证 SSO token，返回 JWT 和 SSO 用户信息
+export const loginWithSSOCallback = async (ssoToken: string): Promise<SSOCallbackResult> => {
+  const res = await fetch(`${FC_BASE_URL}/auth/callback?token=${encodeURIComponent(ssoToken)}`);
+  const data = await res.json();
 
-    // 4. 生成 token（这里使用简单的 base64 编码，实际应该使用 JWT）
-    const token = btoa(`${user.id}:${Date.now()}`);
-    const refreshToken = btoa(`${user.id}:${Date.now() + 1000}`);
-
-    // 4. 返回登录响应
-    return {
-      user,
-      token,
-      refreshToken,
-    };
-  } catch (error: any) {
-    console.error('登录失败:', error);
-    throw new Error(error.message || '登录失败，请稍后重试');
+  if (!res.ok || !data.token) {
+    throw new Error(data.error || 'SSO 验证失败');
   }
+
+  return {
+    jwtToken: data.token,
+    ssoUser: data.user as SSOUser,
+  };
 };
 
-// 登出
+// 登出（清除本地状态，由 store 层处理）
 export const logout = async (): Promise<void> => {
-  await client.post('/auth/logout');
+  // SSO 登出在 store 层完成（清除 localStorage），此处为空实现
 };
 
-// 获取当前用户信息
+// 获取当前用户信息（从 localStorage）
 export const getCurrentUser = async (): Promise<User> => {
-  // 从本地存储获取用户信息
   const userStr = localStorage.getItem('user');
   if (!userStr) {
     throw new Error('未找到用户信息，请重新登录');
@@ -58,14 +50,4 @@ export const getCurrentUser = async (): Promise<User> => {
   } catch (error) {
     throw new Error('用户信息格式错误，请重新登录');
   }
-};
-
-// 刷新 Token
-export const refreshToken = async (): Promise<{ token: string; refreshToken: string }> => {
-  const refreshToken = localStorage.getItem('refreshToken');
-  const response = await client.post<ApiResponse<{ token: string; refreshToken: string }>>(
-    '/auth/refresh',
-    { refreshToken }
-  );
-  return response.data.data;
 };

@@ -40,6 +40,8 @@ jobs:
           VITE_PROJECTS_TOKEN: ${{ secrets.VITE_PROJECTS_TOKEN }}
           VITE_APP_TITLE: ${{ vars.VITE_APP_TITLE }}
           VITE_USE_MOCK: ${{ vars.VITE_USE_MOCK }}
+          VITE_SSO_APP_ID: ${{ vars.VITE_SSO_APP_ID }}
+          VITE_FC_BASE_URL: ${{ vars.VITE_FC_BASE_URL }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

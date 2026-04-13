@@ -5,13 +5,12 @@ export interface User {
   id: string;                          // 用户 ID (UUID)
   username: string;                    // 用户名（唯一）
   email: string;                       // 邮箱（唯一）
-  password: string;                    // 密码（加密存储）
+  password?: string;                   // 密码（SSO 接入后不再使用）
   fullName: string;                    // 全名
   avatar?: string;                     // 头像 URL
   role: Role;                          // 角色
-  department?: string;                 // 部门
-  phone?: string;                      // 电话
   status: UserStatus;                  // 状态
+  workcode?: string;                   // SSO 工号（用于匹配公司账号）
   createdAt: Date;                     // 创建时间
   updatedAt: Date;                     // 更新时间
 }

@@ -108,16 +108,10 @@ const MemberList: React.FC = () => {
 
   const columns = [
     {
-      title: t('user.username'),
-      dataIndex: 'username',
-      key: 'username',
-      width: 100,
-    },
-    {
       title: t('user.fullName'),
       dataIndex: 'fullName',
       key: 'fullName',
-      width: 80,
+      width: 90,
     },
     {
       title: t('user.email'),
@@ -126,10 +120,17 @@ const MemberList: React.FC = () => {
       width: 180,
     },
     {
+      title: '工号',
+      dataIndex: 'workcode',
+      key: 'workcode',
+      width: 90,
+      render: (text: string) => text || '-',
+    },
+    {
       title: t('user.role'),
       dataIndex: 'role',
       key: 'role',
-      width: 100,
+      width: 110,
       render: (role: Role) => (
         <Tag color={getRoleColor(role)}>
           {t(`user.role_${role}`)}
@@ -137,24 +138,10 @@ const MemberList: React.FC = () => {
       ),
     },
     {
-      title: t('user.department'),
-      dataIndex: 'department',
-      key: 'department',
-      width: 100,
-      render: (text: string) => text || '-',
-    },
-    {
-      title: t('user.phone'),
-      dataIndex: 'phone',
-      key: 'phone',
-      width: 100,
-      render: (text: string) => text || '-',
-    },
-    {
       title: t('user.status'),
       dataIndex: 'status',
       key: 'status',
-      width: 75,
+      width: 80,
       render: (status: 'active' | 'inactive') => (
         <Tag color={getStatusColor(status)}>
           {t(`user.status_${status}`)}
@@ -165,7 +152,7 @@ const MemberList: React.FC = () => {
       title: t('common.createdAt'),
       dataIndex: 'createdAt',
       key: 'createdAt',
-      width: 100,
+      width: 105,
       render: (date: Date) => dayjs(date).format('YYYY-MM-DD'),
     },
     {

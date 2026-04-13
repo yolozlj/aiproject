@@ -331,46 +331,25 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 /**
- * 修改密码
- * @param username 用户名（用于查找真实的 Teable record ID）
- * @param currentPassword 当前密码
- * @param newPassword 新密码
- * @param storedPassword 存储的密码（用于验证）
+ * 根据工号查找用户（SSO 登录优先匹配方式）
+ * @param workcode SSO 工号
  */
-export async function changePassword(
-  username: string,
-  currentPassword: string,
-  newPassword: string,
-  storedPassword: string
-): Promise<void> {
-  if (currentPassword !== storedPassword) {
-    throw new Error('current_password_wrong');
-  }
-
-  // 通过 username 查找真实的 Teable record ID（user.id 可能是自定义字段值，不是 record ID）
-  const response = await teableClient.get<TeableResponse<TeableUserFields>>(
-    `/table/${USERS_TABLE_ID}/record`,
-    { params: { fieldKeyType: 'name', take: 100 } }
-  );
-
-  const matchedRecord = (response.data.records || []).find(
-    (r) => r.fields && r.fields.username === username
-  );
-
-  if (!matchedRecord) {
-    throw new Error('user_not_found');
-  }
-
+export async function getUserByWorkcode(workcode: string): Promise<User | null> {
   try {
-    await teableClient.patch(
-      `/table/${USERS_TABLE_ID}/record/${matchedRecord.id}`,
-      {
-        fieldKeyType: 'name',
-        record: { fields: { password: newPassword } },
-      }
+    const response = await teableClient.get<TeableResponse<TeableUserFields>>(
+      `/table/${USERS_TABLE_ID}/record`,
+      { params: { fieldKeyType: 'name', take: 100 } }
     );
+
+    const records = response.data.records || [];
+    const matchedRecord = records.find(record =>
+      record.fields && record.fields.workcode === workcode
+    );
+
+    if (!matchedRecord) return null;
+    return mapTeableToUser(matchedRecord.fields, matchedRecord.id);
   } catch (error) {
-    console.error('修改密码失败:', error);
+    console.error('根据工号查找用户失败:', error);
     throw error;
   }
 }

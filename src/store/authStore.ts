@@ -2,20 +2,30 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User, Role } from '@/types';
 import * as authApi from '@/api/auth';
+import type { SSOUser } from '@/api/auth';
+import { getUserByEmail, getUserByWorkcode, updateUser } from '@/api/user';
 import { clearExternalUserIdsCache } from '@/api/realProjectApi';
 
 interface AuthState {
   user: User | null;
   token: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
 
   // Actions
-  login: (username: string, password: string) => Promise<void>;
+  loginWithSSO: (ssoToken: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User) => void;
-  updateToken: (token: string, refreshToken: string) => void;
+  updateToken: (token: string) => void;
   checkAuth: () => Promise<void>;
+}
+
+// 自定义错误：携带 SSO 用户信息，供登录页面跳转注册使用
+export class AccountNotRegisteredError extends Error {
+  ssoUser: SSOUser;
+  constructor(ssoUser: SSOUser) {
+    super('account_not_registered');
+    this.ssoUser = ssoUser;
+  }
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -23,30 +33,48 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       token: null,
-      refreshToken: null,
       isAuthenticated: false,
 
-      login: async (username: string, password: string) => {
+      loginWithSSO: async (ssoToken: string) => {
         try {
-          const response = await authApi.login({ username, password });
+          // 1. 调用 FC 后端验证 SSO token
+          const { jwtToken, ssoUser } = await authApi.loginWithSSOCallback(ssoToken);
 
-          // 保存到 localStorage
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('refreshToken', response.refreshToken);
-          localStorage.setItem('user', JSON.stringify(response.user));
+          // 2. 优先用工号匹配，找不到再降级用邮箱
+          let user = await getUserByWorkcode(ssoUser.workcode);
+          if (!user) {
+            user = await getUserByEmail(ssoUser.email);
+            // 邮箱降级匹配成功，自动补全工号
+            if (user && ssoUser.workcode) {
+              updateUser(user.id, { workcode: ssoUser.workcode }).catch(() => {});
+              user = { ...user, workcode: ssoUser.workcode };
+            }
+          }
+
+          if (!user) {
+            // 用户不在系统中，跳转权限申请页面
+            throw new AccountNotRegisteredError(ssoUser);
+          }
+
+          if (user.status === 'inactive') {
+            // 用户存在但待审批
+            throw new Error('account_pending_approval');
+          }
+
+          // 3. 登录成功，保存到 localStorage 和 Zustand
+          localStorage.setItem('token', jwtToken);
+          localStorage.setItem('user', JSON.stringify(user));
 
           clearExternalUserIdsCache();
           set({
-            user: response.user,
-            token: response.token,
-            refreshToken: response.refreshToken,
+            user,
+            token: jwtToken,
             isAuthenticated: true,
           });
         } catch (error) {
           set({
             user: null,
             token: null,
-            refreshToken: null,
             isAuthenticated: false,
           });
           throw error;
@@ -60,15 +88,12 @@ export const useAuthStore = create<AuthState>()(
           console.error('Logout error:', error);
         } finally {
           clearExternalUserIdsCache();
-          // 清除本地存储
           localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');
 
           set({
             user: null,
             token: null,
-            refreshToken: null,
             isAuthenticated: false,
           });
         }
@@ -79,10 +104,9 @@ export const useAuthStore = create<AuthState>()(
         set({ user });
       },
 
-      updateToken: (token: string, refreshToken: string) => {
+      updateToken: (token: string) => {
         localStorage.setItem('token', token);
-        localStorage.setItem('refreshToken', refreshToken);
-        set({ token, refreshToken });
+        set({ token });
       },
 
       checkAuth: async () => {
@@ -99,7 +123,6 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: null,
             token: null,
-            refreshToken: null,
             isAuthenticated: false,
           });
         }
@@ -110,14 +133,13 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
     }
   )
 );
 
-// 权限检查 Hook
+// 权限检查 Hook（完全不变）
 export const usePermission = () => {
   const { user } = useAuthStore();
 
