@@ -14,7 +14,7 @@ export const TopNav: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate('/login', { state: { loggedOut: true } });
   };
 
   const menuItems = [
