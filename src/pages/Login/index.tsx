@@ -21,9 +21,16 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     // 优先从 sessionStorage 读取（main.tsx 在 React 挂载前已存入）
-    // 再从 URL 参数读取（回调直接落到 /login 的情况）
+    // 读取时验证时间戳，超过 25 秒视为过期直接丢弃
+    const storedToken = sessionStorage.getItem('sso_pending_token');
+    const storedAt = Number(sessionStorage.getItem('sso_pending_token_at') || 0);
+    const isStale = storedToken && (Date.now() - storedAt > 25_000);
+    if (isStale) {
+      sessionStorage.removeItem('sso_pending_token');
+      sessionStorage.removeItem('sso_pending_token_at');
+    }
     const ssoToken =
-      sessionStorage.getItem('sso_pending_token') ||
+      (!isStale && storedToken) ||
       new URLSearchParams(window.location.search).get('token');
 
     // 情况1：已登录，直接进入系统
@@ -49,6 +56,11 @@ const Login: React.FC = () => {
             });
           } else if (error.message === 'account_pending_approval') {
             setPendingMsg('您的访问申请正在审核中，请联系系统管理员处理。');
+          } else if (error.message?.toLowerCase().includes('expired') || error.message?.toLowerCase().includes('token')) {
+            // token 过期，清除残留并重新跳转 SSO 获取新 token
+            sessionStorage.removeItem('sso_pending_token');
+            sessionStorage.removeItem('sso_pending_token_at');
+            window.location.href = SSO_LOGIN_URL;
           } else {
             setErrorMsg(error.message || 'SSO 验证失败，请刷新页面重试。');
           }

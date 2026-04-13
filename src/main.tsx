@@ -7,7 +7,9 @@ import App from './App';
 const _ssoParams = new URLSearchParams(window.location.search);
 const _ssoToken = _ssoParams.get('token');
 if (_ssoToken) {
+  // 存入时记录时间戳，防止旧 token 被复用
   sessionStorage.setItem('sso_pending_token', _ssoToken);
+  sessionStorage.setItem('sso_pending_token_at', String(Date.now()));
   history.replaceState({}, '', window.location.pathname);
 }
 
