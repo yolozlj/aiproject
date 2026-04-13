@@ -17,8 +17,11 @@ const Login: React.FC = () => {
   const from = (location.state as any)?.from?.pathname || '/dashboard';
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const ssoToken = params.get('token');
+    // 优先从 sessionStorage 读取（main.tsx 在 React 挂载前已存入）
+    // 再从 URL 参数读取（回调直接落到 /login 的情况）
+    const ssoToken =
+      sessionStorage.getItem('sso_pending_token') ||
+      new URLSearchParams(window.location.search).get('token');
 
     // 情况1：已登录，直接进入系统
     if (isAuthenticated && !ssoToken) {
@@ -28,6 +31,7 @@ const Login: React.FC = () => {
 
     // 情况2：SSO 回调，处理 token
     if (ssoToken) {
+      sessionStorage.removeItem('sso_pending_token');
       history.replaceState({}, '', window.location.pathname);
 
       loginWithSSO(ssoToken)
