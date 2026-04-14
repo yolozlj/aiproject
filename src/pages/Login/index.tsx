@@ -17,7 +17,13 @@ const Login: React.FC = () => {
 
   const from = (location.state as any)?.from?.pathname || '/dashboard';
   // 退出登录后跳来的，不自动跳转 SSO，让用户主动点击
-  const isLoggedOut = (location.state as any)?.loggedOut === true;
+  // 支持两种来源：React Router state（站内跳转）和 sessionStorage（SSO 自动认证被拦截后）
+  const [ssoLoggedOut] = useState(() => {
+    const flag = sessionStorage.getItem('sso_logged_out');
+    if (flag) sessionStorage.removeItem('sso_logged_out');
+    return !!flag;
+  });
+  const isLoggedOut = (location.state as any)?.loggedOut === true || ssoLoggedOut;
 
   useEffect(() => {
     // 优先从 sessionStorage 读取（main.tsx 在 React 挂载前已存入）
