@@ -7,6 +7,9 @@ import './TopNav.css';
 
 const { Header } = Layout;
 
+const SSO_APP_ID = import.meta.env.VITE_SSO_APP_ID as string;
+const SSO_LOGOUT_URL = `https://sso.100tal.com/portal/logout/${SSO_APP_ID}`;
+
 export const TopNav: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -14,7 +17,8 @@ export const TopNav: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    // 跳转 SSO 退出端点，清除 SSO session，避免直接自动登录
+    window.location.href = SSO_LOGOUT_URL;
   };
 
   const menuItems = [
