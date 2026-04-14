@@ -4,48 +4,12 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ========== Logo ========== */
-.sider-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 20px 16px 16px;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.sider-logo-icon {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #5B8DEF, #7BA4F4);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sider-logo-text {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  letter-spacing: -0.3px;
-}
-
-.side-nav-collapsed .sider-logo {
-  justify-content: center;
-  padding: 20px 0 16px;
-}
-
 /* ========== 自定义菜单 ========== */
 .sider-menu {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 0 12px;
+  padding: 12px 12px 0;
 }
 
 .sider-menu-item {

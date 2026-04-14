@@ -37,7 +37,10 @@ export const TopNav: React.FC = () => {
 
   return (
     <Header className="top-nav">
-      <div className="logo" />
+      <div className="top-logo">
+        <div className="top-logo-icon">P</div>
+        <span className="top-logo-text">项目管理</span>
+      </div>
       <div className="user-menu">
         <Dropdown menu={{ items: menuItems }} placement="bottomRight">
           <Space className="user-info">

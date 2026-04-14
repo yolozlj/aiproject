@@ -74,12 +74,6 @@ export const SideNav: React.FC = () => {
       trigger={null}
       className={`side-nav ${collapsed ? 'side-nav-collapsed' : ''}`}
     >
-      {/* Logo */}
-      <div className="sider-logo">
-        <div className="sider-logo-icon">P</div>
-        {!collapsed && <span className="sider-logo-text">项目管理</span>}
-      </div>
-
       {/* 自定义菜单 */}
       <nav className="sider-menu">
         {menuItems.map((item) => (
