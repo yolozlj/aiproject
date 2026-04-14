@@ -19,8 +19,6 @@ export const TopNav: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
-    // 记录退出时间戳，用于检测 SSO 残留 cookie 导致的自动重新认证
-    sessionStorage.setItem('sso_logout_at', String(Date.now()));
     // 官方退出登录：先清除 SSO cookie，再跳回 SSO 登录页
     window.location.href = SSO_LOGOUT_URL;
   };
