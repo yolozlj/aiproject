@@ -9,7 +9,8 @@ const { Header } = Layout;
 
 const SSO_APP_ID = import.meta.env.VITE_SSO_APP_ID as string;
 const SSO_LOGIN_URL = `https://sso.100tal.com/portal/login/${SSO_APP_ID}`;
-const SSO_LOGOUT_URL = `https://sso.100tal.com/sso/logout?path=${encodeURIComponent(SSO_LOGIN_URL)}`;
+// 官方文档示例为不编码写法，与文档保持一致
+const SSO_LOGOUT_URL = `https://sso.100tal.com/sso/logout?path=${SSO_LOGIN_URL}`;
 
 export const TopNav: React.FC = () => {
   const { t } = useTranslation();
