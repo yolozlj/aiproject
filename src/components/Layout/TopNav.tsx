@@ -7,6 +7,11 @@ import './TopNav.css';
 
 const { Header } = Layout;
 
+const SSO_APP_ID = import.meta.env.VITE_SSO_APP_ID as string;
+const SSO_LOGIN_URL = `https://sso.100tal.com/portal/login/${SSO_APP_ID}`;
+// 官方文档示例为不编码写法，与文档保持一致
+const SSO_LOGOUT_URL = `https://sso.100tal.com/sso/logout?path=${SSO_LOGIN_URL}`;
+
 export const TopNav: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -14,12 +19,8 @@ export const TopNav: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
-    // 标记"刚退出登录"，让 Login 页展示退出确认而非自动跳 SSO
-    localStorage.setItem('sso_logged_out', '1');
-    // SSO logout 清除 cookie 后重定向回我们自己的 Login 页（而非 SSO 登录页）
-    // 避免 SSO 残留持久化 cookie 导致自动重新登录
-    const appLoginUrl = `${window.location.origin}/aiproject/login`;
-    window.location.href = `https://sso.100tal.com/sso/logout?path=${appLoginUrl}`;
+    // 官方退出登录：先清除 SSO cookie，再跳回 SSO 登录页
+    window.location.href = SSO_LOGOUT_URL;
   };
 
   const menuItems = [
