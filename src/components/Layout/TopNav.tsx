@@ -15,10 +15,15 @@ const SSO_LOGOUT_URL = `https://sso.100tal.com/sso/logout?path=${SSO_LOGIN_URL}`
 export const TopNav: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    // 同步清除认证状态，不调用 Zustand set() 避免触发 React 重渲染竞态
+    // （若 set() 触发重渲染，ProtectedRoute→Login 的 useEffect 会抢先跳转 SSO_LOGIN_URL，
+    //   导致 SSO cookie 未被 /sso/logout 清除）
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('auth-storage');
     // 官方退出登录：先清除 SSO cookie，再跳回 SSO 登录页
     window.location.href = SSO_LOGOUT_URL;
   };

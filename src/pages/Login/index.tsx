@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Spin, Alert, Button } from 'antd';
-import { LoginOutlined } from '@ant-design/icons';
+import { Spin, Alert } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore, AccountNotRegisteredError } from '@/store/authStore';
 import './Login.css';
@@ -16,8 +15,6 @@ const Login: React.FC = () => {
   const { isAuthenticated, loginWithSSO } = useAuthStore();
 
   const from = (location.state as any)?.from?.pathname || '/dashboard';
-  // 退出登录后跳来的，不自动跳转 SSO，让用户主动点击
-  const isLoggedOut = (location.state as any)?.loggedOut === true;
 
   useEffect(() => {
     // 优先从 sessionStorage 读取（main.tsx 在 React 挂载前已存入）
@@ -68,10 +65,7 @@ const Login: React.FC = () => {
       return;
     }
 
-    // 情况3：退出登录后来的，不自动跳转，等用户主动点击
-    if (isLoggedOut) return;
-
-    // 情况4：未登录且无 token，立即跳转 SSO
+    // 情况3：未登录且无 token，立即跳转 SSO
     window.location.href = SSO_LOGIN_URL;
   }, []);
 
@@ -94,26 +88,10 @@ const Login: React.FC = () => {
         </div>
         <h1 className="login-title" style={{ margin: 0 }}>项目管理系统</h1>
 
-        {!errorMsg && !pendingMsg && !isLoggedOut && (
+        {!errorMsg && !pendingMsg && (
           <>
             <Spin size="large" />
             <p style={{ color: 'var(--color-text-secondary)', margin: 0 }}>正在跳转登录…</p>
-          </>
-        )}
-
-        {isLoggedOut && !errorMsg && !pendingMsg && (
-          <>
-            <p style={{ color: 'var(--color-text-secondary)', margin: 0 }}>您已退出登录</p>
-            <Button
-              type="primary"
-              size="large"
-              icon={<LoginOutlined />}
-              block
-              className="login-button"
-              onClick={() => { window.location.href = SSO_LOGIN_URL; }}
-            >
-              重新登录
-            </Button>
           </>
         )}
 
