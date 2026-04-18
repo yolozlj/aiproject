@@ -54,22 +54,8 @@
 }
 
 /* ========== 折叠状态 ========== */
-.side-nav-collapsed .sider-menu {
-  padding: 0 8px;
-  align-items: center;
-}
-
-.side-nav-collapsed .sider-menu-item {
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  justify-content: center;
-  border-radius: 10px;
-}
-
-.side-nav-collapsed .sider-menu-icon {
-  font-size: 20px;
-}
+/* 保持 padding 和布局与展开状态一致，仅隐藏 label，
+   这样图标位置（水平、垂直、尺寸）在折叠前后完全对齐 */
 
 /* ========== 折叠按钮 ========== */
 .sider-collapse-btn {
