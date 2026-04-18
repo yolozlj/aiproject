@@ -83,6 +83,7 @@
 }
 
 .dashboard-title {
+  font-family: Georgia, 'Songti SC', 'STSong', 'SimSun', serif;
   font-size: 48px;
   font-weight: 300;
   letter-spacing: -0.02em;
@@ -275,6 +276,7 @@
 }
 
 .section-title {
+  font-family: Georgia, 'Songti SC', 'STSong', 'SimSun', serif;
   font-size: 16px;
   font-weight: 300;
   color: var(--color-text-primary);
